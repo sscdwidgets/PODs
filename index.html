@@ -147,6 +147,29 @@
 
 
 
+  .cre-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--navy);
+    color: #fff;
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+    white-space: nowrap;
+    letter-spacing: 0.02em;
+    transition: background 0.15s;
+    flex-shrink: 0;
+  }
+  .cre-btn svg { width: 12px; height: 12px; flex-shrink: 0; }
+  .cre-btn:hover { background: var(--navy-light); }
+
+  /* hide on mobile — CTA banner handles it */
+  @media (max-width: 640px) { .cre-btn { display: none; } }
+
   /* Expand/collapse buttons */
   .ctrl-btn {
     background: #fff;
@@ -648,6 +671,13 @@
       </div>
       <button class="ctrl-btn" id="expandAll">Expand All</button>
       <button class="ctrl-btn" id="collapseAll">Collapse All</button>
+      <a href="https://southstatecorrespondent.com/loan-command-free-signup/?utm_source=ci-pod-widget&utm_medium=widget&utm_campaign=loan-command&utm_content=cre-btn" target="_blank" rel="noopener" class="cre-btn">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="6" width="10" height="7" rx="1"/>
+          <path d="M5 6V4a2 2 0 0 1 4 0v2"/>
+        </svg>
+        Unlock Investor CRE
+      </a>
     </div>
   </div>
   <div class="stats-bar">
@@ -672,10 +702,10 @@
     <div class="col-header-cell" data-sort="naics">NAICS <span class="sort-icon">↕</span></div>
     <div class="col-header-cell" data-sort="industry">Industry <span class="sort-icon">↕</span></div>
     <div class="col-header-cell" data-sort="pd">PD <span class="sort-icon">↕</span></div>
-    <div class="col-header-cell" data-sort="med">Range (L / Med / H) <span class="sort-icon">↕</span></div>
+    <div class="col-header-cell" data-sort="med">Historical Range (L / Med / H) <span class="sort-icon">↕</span></div>
     <div class="col-header-cell right" data-sort="vol">Vol <span class="sort-icon">↕</span></div>
-    <div class="col-header-cell right" data-sort="yoy">YoY bps <span class="sort-icon">↕</span></div>
-    <div class="col-header-cell right" data-sort="qoq">QoQ bps <span class="sort-icon">↕</span></div>
+    <div class="col-header-cell right" data-sort="yoy">YoY % <span class="sort-icon">↕</span></div>
+    <div class="col-header-cell right" data-sort="qoq">QoQ % <span class="sort-icon">↕</span></div>
   </div>
   <div class="rows-container" id="rows"></div>
   <div class="empty-state" id="emptyState" style="display:none">
@@ -708,7 +738,7 @@
 </div>
 
 <div class="app-footer">
-  Source: Loan Command PODs 1Q 2026 · bps = basis points (1 bps = 0.01%) · Positive YoY/QoQ = increasing default risk · v1.7
+  Source: Loan Command PODs 1Q 2026 · YoY/QoQ shown as % change · Positive = increasing default risk · v2.0
 </div>
 
 <script>
@@ -767,33 +797,55 @@ function getParentNaics(row) {
 }
 
 // Build flat visible list based on expand state and search
+function sortRows(rows) {
+  if (!sortCol) return rows;
+  return [...rows].sort((a, b) => {
+    if (sortCol === 'naics')    return sortDir * a.naics.localeCompare(b.naics);
+    if (sortCol === 'industry') return sortDir * a.industry.localeCompare(b.industry);
+    let av, bv;
+    if (sortCol === 'pd')  { av = a.pd_adj;   bv = b.pd_adj;   }
+    if (sortCol === 'med') { av = a.med;       bv = b.med;      }
+    if (sortCol === 'vol') { av = a.vol;       bv = b.vol;      }
+    if (sortCol === 'yoy') { av = a.yoy_adj;  bv = b.yoy_adj;  }
+    if (sortCol === 'qoq') { av = a.qoq_adj;  bv = b.qoq_adj;  }
+    return sortDir * (av - bv);
+  });
+}
+
 function buildVisible() {
   if (searchTerm) {
-    // In search mode, show all matching rows flat
     const q = searchTerm.toLowerCase();
-    return RAW.filter(d =>
+    const results = RAW.filter(d =>
       d.industry.toLowerCase().includes(q) || d.naics.toLowerCase().includes(q)
     );
+    return sortRows(results);
   }
 
+  // Sort top-level sectors
+  const sectors = sortRows(RAW.filter(d => d.level === 2 || d.level === 5));
   const result = [];
-  RAW.forEach(d => {
-    if (d.level === 2 || d.level === 5) {
-      result.push(d);
-    } else if (d.level === 3) {
-      const parentNaics = getParentNaics(d);
-      if (parentNaics && expandState[parentNaics]) result.push(d);
-    } else if (d.level === 4) {
-      const parent3Naics = getParentNaics(d);
-      if (!parent3Naics) return;
-      const parent3 = RAW.find(r => r.level === 3 && r.naics === parent3Naics);
-      if (!parent3) return;
-      const parent2Naics = getParentNaics(parent3);
-      const parent2Open = parent2Naics && expandState[parent2Naics];
-      const parent3Open = expandState[parent3Naics];
-      if (parent2Open && parent3Open) result.push(d);
-    }
+
+  sectors.forEach(sector => {
+    result.push(sector);
+    if (!expandState[sector.naics]) return;
+
+    // Sort subsectors within this sector
+    const subsectors = sortRows(
+      RAW.filter(d => d.level === 3 && getParentNaics(d) === sector.naics)
+    );
+
+    subsectors.forEach(sub => {
+      result.push(sub);
+      if (!expandState[sub.naics]) return;
+
+      // Sort industry groups within this subsector
+      const industries = sortRows(
+        RAW.filter(d => d.level === 4 && getParentNaics(d) === sub.naics)
+      );
+      industries.forEach(ind => result.push(ind));
+    });
   });
+
   return result;
 }
 
@@ -802,10 +854,11 @@ function fmtPct(v) {
 }
 
 function bpsCell(val) {
-  if (val === 0) return `<span class="cell-bps bps-flat">0 bps</span>`;
+  if (val === 0) return `<span class="cell-bps bps-flat">0.00%</span>`;
   const cls = val > 0 ? 'bps-up' : 'bps-down';
   const arrow = val > 0 ? '▲' : '▼';
-  return `<span class="cell-bps ${cls}"><span class="bps-arrow">${arrow}</span>${Math.abs(val)}</span>`;
+  const pct = (Math.abs(val) / 100).toFixed(2) + '%';
+  return `<span class="cell-bps ${cls}"><span class="bps-arrow">${arrow}</span>${pct}</span>`;
 }
 
 function rangeBar(d) {
@@ -857,21 +910,6 @@ function renderRows() {
   const empty = document.getElementById('emptyState');
   let visible = buildVisible();
 
-  // Sort if needed
-  if (sortCol && searchTerm) {
-    visible.sort((a, b) => {
-      let av, bv;
-      if (sortCol === 'naics') { av = a.naics; bv = b.naics; return sortDir * av.localeCompare(bv); }
-      if (sortCol === 'industry') { av = a.industry; bv = b.industry; return sortDir * av.localeCompare(bv); }
-      if (sortCol === 'pd') { av = mode === 'adj' ? a.pd_adj : a.pd; bv = mode === 'adj' ? b.pd_adj : b.pd; }
-      if (sortCol === 'med') { av = a.med; bv = b.med; }
-      if (sortCol === 'vol') { av = a.vol; bv = b.vol; }
-      if (sortCol === 'yoy') { av = mode === 'adj' ? a.yoy_adj : a.yoy; bv = mode === 'adj' ? b.yoy_adj : b.yoy; }
-      if (sortCol === 'qoq') { av = mode === 'adj' ? a.qoq_adj : a.qoq; bv = mode === 'adj' ? b.qoq_adj : b.qoq; }
-      return sortDir * (av - bv);
-    });
-  }
-
   if (visible.length === 0) {
     container.innerHTML = '';
     empty.style.display = 'block';
@@ -921,6 +959,7 @@ function renderRows() {
       if (!searchTerm && HAS_CHILDREN.has(naics)) {
         expandState[naics] = !expandState[naics];
         renderRows();
+        window.parent.postMessage({ type: 'SCROLL_TOP' }, '*');
       }
     });
   });
@@ -942,7 +981,7 @@ function updateStats(visible) {
     document.getElementById('stat-avg').textContent = fmtPct(avg);
     document.getElementById('stat-max').textContent = fmtPct(maxPd) + ' (' + maxItem.naics + ')';
     const sign = avgYoy > 0 ? '+' : '';
-    document.getElementById('stat-yoy').textContent = sign + avgYoy.toFixed(0) + ' bps';
+    document.getElementById('stat-yoy').textContent = sign + (avgYoy / 100).toFixed(2) + '%';
   } else {
     document.getElementById('stat-avg').textContent = '—';
     document.getElementById('stat-max').textContent = '—';
@@ -966,6 +1005,9 @@ document.getElementById('collapseAll').addEventListener('click', () => {
 
 let searchTimer;
 document.getElementById('search').addEventListener('input', e => {
+  // Strip anything that isn't a letter, number, space, or hyphen
+  const clean = e.target.value.replace(/[^a-zA-Z0-9 \-]/g, '');
+  if (e.target.value !== clean) e.target.value = clean;
   clearTimeout(searchTimer);
   searchTimer = setTimeout(() => {
     searchTerm = e.target.value.trim();
@@ -976,14 +1018,21 @@ document.getElementById('search').addEventListener('input', e => {
 document.querySelectorAll('.col-header-cell[data-sort]').forEach(cell => {
   cell.addEventListener('click', () => {
     const col = cell.dataset.sort;
-    if (sortCol === col) sortDir *= -1;
-    else { sortCol = col; sortDir = 1; }
-    document.querySelectorAll('.col-header-cell').forEach(c => c.classList.remove('active'));
-    cell.classList.add('active');
-    // Sort only applies in search mode; in tree mode just re-render
-    if (!searchTerm) {
-      // Enable flat sort in normal mode too by temporarily treating as search
+    if (sortCol === col) {
+      sortDir *= -1;
+    } else {
+      sortCol = col;
+      sortDir = 1;
     }
+    // Update header indicators
+    document.querySelectorAll('.col-header-cell').forEach(c => {
+      c.classList.remove('active');
+      const icon = c.querySelector('.sort-icon');
+      if (icon) icon.textContent = '↕';
+    });
+    cell.classList.add('active');
+    const icon = cell.querySelector('.sort-icon');
+    if (icon) icon.textContent = sortDir === 1 ? '↑' : '↓';
     renderRows();
   });
 });
