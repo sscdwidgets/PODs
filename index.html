@@ -999,6 +999,20 @@ setTimeout(updateStickyTop, 100);
 
 // Initial render
 renderRows();
+// ── AUTO-RESIZE: broadcast height to parent frame ──
+function postHeight() {
+  const h = document.documentElement.scrollHeight;
+  window.parent.postMessage({ type: 'RESIZE', height: h }, '*');
+}
+
+// Fire on load, on render, and on window resize
+const _origRenderRows = renderRows;
+renderRows = function() { _origRenderRows(); setTimeout(postHeight, 50); };
+
+window.addEventListener('resize', postHeight);
+window.addEventListener('load', postHeight);
+setTimeout(postHeight, 300);
+
 </script>
 </body>
 </html>
