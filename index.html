@@ -391,7 +391,6 @@
     display: flex;
     flex-direction: column;
     gap: 3px;
-    padding-left: 8px;
   }
   .range-bar-wrap {
     position: relative;
@@ -439,6 +438,8 @@
     justify-content: flex-end;
     gap: 3px;
   }
+  /* breathing room between PD and YoY column */
+  .cell-bps-yoy { padding-left: 8px; }
   .bps-up { color: var(--red); }
   .bps-down { color: var(--green); }
   .bps-flat { color: var(--text-muted); }
@@ -929,7 +930,7 @@ function renderRows() {
       </div>
       <div class="cell-name">${industryText}</div>
       <div class="cell-pd ${pdHeat(pdVal)}">${fmtPct(pdVal)}</div>
-      ${bpsCell(yoyVal)}
+      <span class="cell-bps-yoy">${bpsCell(yoyVal)}</span>
       ${bpsCell(qoqVal)}
       ${rangeBar(d)}
       <span class="cell-vol ${volHeat(d.vol)}">${fmtPct(d.vol)}</span>
