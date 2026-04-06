@@ -87,28 +87,21 @@
     min-width: 180px;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
   }
   .header-logo {
-    width: 6px;
-    height: 36px;
+    width: 7px;
+    height: 42px;
     background: var(--gold);
     border-radius: 3px;
     flex-shrink: 0;
   }
   .header-title h1 {
-    font-size: 15px;
+    font-size: 20px;
     font-weight: 700;
     color: var(--navy);
-    letter-spacing: 0.01em;
-    line-height: 1.2;
-  }
-  .header-title p {
-    font-size: 10px;
-    color: var(--gray-light);
-    margin-top: 2px;
-    font-family: var(--mono);
-    letter-spacing: 0.05em;
+    letter-spacing: -0.01em;
+    line-height: 1;
   }
   .header-controls {
     display: flex;
@@ -577,9 +570,8 @@
 
     /* Header */
     .app-header { padding: 10px 14px 8px; }
-    .header-logo { height: 26px; }
-    .header-title h1 { font-size: 13px; }
-    .header-title p { display: none; }
+    .header-logo { height: 32px; }
+    .header-title h1 { font-size: 16px; }
     .header-top { gap: 8px; }
 
     /* Controls: search full width, toggle below */
@@ -647,7 +639,7 @@
     }
     .col-header { padding: 6px 8px; }
     .naics-badge { font-size: 8.5px; padding: 1px 4px; }
-    .header-title h1 { font-size: 12px; }
+    .header-title h1 { font-size: 14px; }
   }
 </style>
 </head>
@@ -657,10 +649,7 @@
   <div class="header-top">
     <div class="header-title">
       <div class="header-logo"></div>
-      <div>
-        <h1>Loan Command</h1>
-        <p>C&amp;I PROBABILITY OF DEFAULT · 1Q 2026</p>
-      </div>
+      <h1>Loan Command</h1>
     </div>
     <div class="header-controls">
       <div class="search-wrap">
@@ -680,12 +669,7 @@
       </a>
     </div>
   </div>
-  <div class="stats-bar">
-    <div class="stat-chip">Industries: <span id="stat-count">—</span></div>
-    <div class="stat-chip">Avg PD: <span id="stat-avg">—</span></div>
-    <div class="stat-chip">Highest PD: <span id="stat-max">—</span></div>
-    <div class="stat-chip">Avg YoY: <span id="stat-yoy">—</span></div>
-  </div>
+
 </div>
 
 <div class="mobile-banner">
@@ -738,7 +722,7 @@
 </div>
 
 <div class="app-footer">
-  Source: Loan Command PODs 1Q 2026 · YoY/QoQ shown as % change · Positive = increasing default risk · v2.0
+  Source: Loan Command PODs 1Q 2026 · YoY/QoQ shown as % change · Positive = increasing default risk · v2.2
 </div>
 
 <script>
@@ -967,27 +951,7 @@ function renderRows() {
   updateStats(visible);
 }
 
-function updateStats(visible) {
-  const lvl4 = visible.filter(d => d.level === 4 || (searchTerm && d.level >= 3));
-  document.getElementById('stat-count').textContent = visible.length;
-  if (lvl4.length) {
-    const avg = lvl4.reduce((s, d) => s + (mode === 'adj' ? d.pd_adj : d.pd), 0) / lvl4.length;
-    const maxItem = lvl4.reduce((m, d) => {
-      const v = mode === 'adj' ? d.pd_adj : d.pd;
-      return v > (mode === 'adj' ? m.pd_adj : m.pd) ? d : m;
-    });
-    const maxPd = mode === 'adj' ? maxItem.pd_adj : maxItem.pd;
-    const avgYoy = lvl4.reduce((s, d) => s + (mode === 'adj' ? d.yoy_adj : d.yoy), 0) / lvl4.length;
-    document.getElementById('stat-avg').textContent = fmtPct(avg);
-    document.getElementById('stat-max').textContent = fmtPct(maxPd) + ' (' + maxItem.naics + ')';
-    const sign = avgYoy > 0 ? '+' : '';
-    document.getElementById('stat-yoy').textContent = sign + (avgYoy / 100).toFixed(2) + '%';
-  } else {
-    document.getElementById('stat-avg').textContent = '—';
-    document.getElementById('stat-max').textContent = '—';
-    document.getElementById('stat-yoy').textContent = '—';
-  }
-}
+function updateStats() {} // stat bar removed
 
 // Init expand state: sectors open by default
 RAW.forEach(d => { if (d.level === 2 || d.level === 5) expandState[d.naics] = false; });
