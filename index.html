@@ -232,7 +232,7 @@
   /* Column header */
   .col-header {
     display: grid;
-    grid-template-columns: 90px 1fr 72px 80px 80px 220px 70px;
+    grid-template-columns: 90px 1fr 58px 72px 72px 220px 70px;
     padding: 7px 16px;
     background: #eef1f8;
     border-bottom: 2px solid var(--gold);
@@ -265,7 +265,7 @@
 
   .row {
     display: grid;
-    grid-template-columns: 90px 1fr 72px 80px 80px 220px 70px;
+    grid-template-columns: 90px 1fr 58px 72px 72px 220px 70px;
     gap: 8px;
     padding: 0 16px;
     border-bottom: 1px solid var(--border);
@@ -353,7 +353,7 @@
     font-family: var(--mono);
     font-size: 13px;
     font-weight: 600;
-    text-align: left;
+    text-align: right;
     color: var(--text);
   }
   .level-2 .cell-pd { font-size: 14px; }
@@ -391,6 +391,8 @@
     display: flex;
     flex-direction: column;
     gap: 3px;
+    padding-left: 12px;
+    border-left: 2px solid var(--border);
   }
   .range-bar-wrap {
     position: relative;
@@ -438,8 +440,8 @@
     justify-content: flex-end;
     gap: 3px;
   }
-  /* breathing room between PD and YoY column */
-  .cell-bps-yoy { padding-left: 8px; }
+  /* breathing room between QoQ and Historical Range */
+  .cell-range { padding-left: 8px; }
   .bps-up { color: var(--red); }
   .bps-down { color: var(--green); }
   .bps-flat { color: var(--text-muted); }
@@ -541,7 +543,7 @@
   /* Medium screens: hide QoQ */
   @media (max-width: 860px) {
     .col-header, .row {
-      grid-template-columns: 90px 1fr 72px 80px 80px 200px 70px;
+      grid-template-columns: 90px 1fr 58px 72px 72px 200px 70px;
     }
     .col-header-cell:nth-child(5),
     .row > .cell-bps:last-child { display: none; }
@@ -930,7 +932,7 @@ function renderRows() {
       </div>
       <div class="cell-name">${industryText}</div>
       <div class="cell-pd ${pdHeat(pdVal)}">${fmtPct(pdVal)}</div>
-      <span class="cell-bps-yoy">${bpsCell(yoyVal)}</span>
+      ${bpsCell(yoyVal)}
       ${bpsCell(qoqVal)}
       ${rangeBar(d)}
       <span class="cell-vol ${volHeat(d.vol)}">${fmtPct(d.vol)}</span>
