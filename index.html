@@ -145,34 +145,7 @@
   #search::placeholder { color: var(--text-muted); }
   #search:focus { background: #fff; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(9,96,187,0.1); }
 
-  /* Toggle */
-  .toggle-group {
-    display: flex;
-    background: #eef1f8;
-    border-radius: 6px;
-    padding: 2px;
-    gap: 2px;
-    border: 1px solid var(--border);
-  }
-  .toggle-btn {
-    background: transparent;
-    border: none;
-    color: var(--gray);
-    font-family: var(--sans);
-    font-size: 11px;
-    font-weight: 500;
-    padding: 5px 11px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.15s;
-    white-space: nowrap;
-  }
-  .toggle-btn.active {
-    background: var(--navy);
-    color: #fff;
-    font-weight: 600;
-  }
-  .toggle-btn:not(.active):hover { background: #dde3f0; color: var(--navy); }
+
 
   /* Expand/collapse buttons */
   .ctrl-btn {
@@ -200,17 +173,40 @@
     flex-wrap: wrap;
   }
   .stat-chip {
-    font-size: 10px;
+    font-size: 12px;
     font-family: var(--mono);
     color: var(--text-muted);
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 5px;
   }
   .stat-chip span {
     color: var(--navy);
-    font-weight: 600;
+    font-weight: 700;
+    font-size: 13px;
   }
+
+  .pd-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--navy);
+    background: #eef1f8;
+    border: 1px solid var(--border-dark);
+    padding: 5px 12px;
+    border-radius: 6px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .cell-vol {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    text-align: right;
+    color: var(--gray);
+  }
+  .level-2 .cell-vol, .level-5 .cell-vol { font-weight: 600; }
 
   /* ── TABLE AREA ── */
   .table-wrap {
@@ -220,7 +216,7 @@
   /* Column header */
   .col-header {
     display: grid;
-    grid-template-columns: 90px 1fr 72px 240px 80px 80px;
+    grid-template-columns: 90px 1fr 72px 220px 70px 80px 80px;
     padding: 7px 16px;
     background: #eef1f8;
     border-bottom: 2px solid var(--gold);
@@ -253,7 +249,7 @@
 
   .row {
     display: grid;
-    grid-template-columns: 90px 1fr 72px 240px 80px 80px;
+    grid-template-columns: 90px 1fr 72px 220px 70px 80px 80px;
     gap: 8px;
     padding: 0 16px;
     border-bottom: 1px solid var(--border);
@@ -345,6 +341,22 @@
     color: var(--text);
   }
   .level-2 .cell-pd { font-size: 14px; }
+
+  /* PD heat scale */
+  .pd-h1 { color: #1a7a4a; }   /* deep green  < 1.5% */
+  .pd-h2 { color: #4da832; }   /* light green  1.5–2% */
+  .pd-h3 { color: #c9960a; }   /* yellow       2–3% */
+  .pd-h4 { color: #d4620a; }   /* orange       3–4.5% */
+  .pd-h5 { color: #c0406a; }   /* pink         4.5–6% */
+  .pd-h6 { color: #b91c1c; }   /* red          > 6% */
+
+  /* Vol heat scale */
+  .vol-h1 { color: #1a7a4a; }  /* deep green  < 0.6% */
+  .vol-h2 { color: #4da832; }  /* light green  0.6–0.9% */
+  .vol-h3 { color: #c9960a; }  /* yellow       0.9–1.3% */
+  .vol-h4 { color: #d4620a; }  /* orange       1.3–1.8% */
+  .vol-h5 { color: #c0406a; }  /* pink         1.8–2.5% */
+  .vol-h6 { color: #b91c1c; }  /* red          > 2.5% */
   .adj-badge {
     display: inline-block;
     font-size: 8px;
@@ -428,6 +440,71 @@
   .empty-state h3 { font-size: 14px; font-weight: 500; margin-bottom: 6px; }
   .empty-state p { font-size: 12px; }
 
+  /* CTA Banner */
+  .cta-banner {
+    background: linear-gradient(135deg, var(--navy) 0%, #0050a8 100%);
+    padding: 18px 20px;
+    margin-top: 8px;
+  }
+  .cta-content {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .cta-text {
+    color: rgba(255,255,255,0.9);
+    font-size: 13px;
+    line-height: 1.5;
+    flex: 1;
+    min-width: 220px;
+  }
+  .cta-text strong {
+    color: #fff;
+    display: block;
+    font-size: 14px;
+    margin-bottom: 3px;
+  }
+  .cta-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+  }
+  .cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 700;
+    padding: 10px 18px;
+    border-radius: 7px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.15s, transform 0.1s, opacity 0.15s;
+  }
+  .cta-text em {
+    font-style: normal;
+    color: var(--gold);
+    font-weight: 600;
+  }
+  .cta-btn:hover { transform: translateY(-1px); }
+  .cta-btn-primary {
+    background: var(--gold);
+    color: var(--navy);
+  }
+  .cta-btn-primary:hover { background: var(--gold-dark); }
+  .cta-btn-secondary {
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.25);
+  }
+  .cta-btn-secondary:hover { background: rgba(255,255,255,0.2); }
+
   /* Footer */
   .app-footer {
     text-align: center;
@@ -441,90 +518,113 @@
 
   /* ── RESPONSIVE ── */
 
+  /* Mobile banner - hidden on desktop */
+  .mobile-banner { display: none; }
+
   /* Medium screens: hide QoQ */
   @media (max-width: 860px) {
     .col-header, .row {
-      grid-template-columns: 90px 1fr 72px 240px 80px;
+      grid-template-columns: 90px 1fr 72px 200px 70px 80px;
     }
-    .col-header-cell:nth-child(6),
+    .col-header-cell:nth-child(7),
     .row > .cell-bps:last-child { display: none; }
   }
 
-  /* Small screens */
-  @media (max-width: 600px) {
-    .app-header { padding: 10px 14px 8px; }
-    .header-title h1 { font-size: 13.5px; }
-    .header-title p { display: none; }
-    .header-logo { height: 28px; }
+  /* Mobile: stripped to NAICS · Industry · PD% · YoY */
+  @media (max-width: 640px) {
 
-    /* Controls: search full-width on its own line, toggle + expand inline below */
-    .header-top { flex-wrap: wrap; gap: 8px; }
+    /* Mobile banner */
+    .mobile-banner {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      background: #eef3fb;
+      border-bottom: 1px solid #cdd7ed;
+      padding: 10px 14px;
+      font-size: 11.5px;
+      color: var(--gray);
+      line-height: 1.4;
+    }
+    .mobile-banner svg {
+      flex-shrink: 0;
+      margin-top: 1px;
+      color: var(--blue);
+      width: 15px; height: 15px;
+    }
+
+    /* Header */
+    .app-header { padding: 10px 14px 8px; }
+    .header-logo { height: 26px; }
+    .header-title h1 { font-size: 13px; }
+    .header-title p { display: none; }
+    .header-top { gap: 8px; }
+
+    /* Controls: search full width, toggle below */
     .header-controls {
       width: 100%;
-      display: grid;
-      grid-template-columns: 1fr auto auto;
-      gap: 6px;
-      align-items: center;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
     }
-    .search-wrap { grid-column: 1 / -1; }
+    .search-wrap { width: 100%; }
     #search {
       width: 100%;
-      font-size: 16px; /* prevents iOS zoom */
+      font-size: 16px;
       padding: 9px 10px 9px 32px;
     }
-    .toggle-group { white-space: nowrap; }
-    .toggle-btn { padding: 6px 9px; font-size: 11px; }
     .ctrl-btn { display: none; }
 
-    /* Stats bar: single scrollable row */
+    /* Stats bar: scrollable single row */
     .stats-bar {
       flex-wrap: nowrap;
       overflow-x: auto;
-      gap: 12px;
+      gap: 14px;
+      margin-top: 8px;
       padding-bottom: 2px;
       -webkit-overflow-scrolling: touch;
       scrollbar-width: none;
     }
     .stats-bar::-webkit-scrollbar { display: none; }
-    .stat-chip { white-space: nowrap; font-size: 10px; }
-    .stat-chip:nth-child(3) { display: none; }
+    .stat-chip { white-space: nowrap; font-size: 10.5px; }
 
-    /* Table */
+    /* Table: NAICS · Industry · PD · Vol · YoY only */
     .col-header, .row {
-      grid-template-columns: 66px 1fr 68px 58px;
-      padding: 0 10px;
-      gap: 6px;
+      grid-template-columns: 62px 1fr 64px 58px 62px;
+      padding: 0 12px;
+      gap: 8px;
     }
-    .col-header { padding: 6px 10px; }
+    .col-header { padding: 7px 12px; }
+
+    /* Hide Range and QoQ */
     .col-header-cell:nth-child(4),
-    .col-header-cell:nth-child(5),
-    .col-header-cell:nth-child(6),
+    .col-header-cell:nth-child(7),
     .row > .cell-range,
     .row > .cell-bps:last-child { display: none; }
 
+    /* Typography */
     .naics-badge { font-size: 9px; padding: 2px 5px; }
+    .expand-btn { width: 14px; height: 14px; }
     .expand-btn svg { width: 9px; height: 9px; }
-    .cell-name { font-size: 11.5px; }
+    .cell-name { font-size: 12px; }
     .cell-pd { font-size: 12px; }
-    .cell-bps { font-size: 11px; gap: 2px; }
+    .cell-bps { font-size: 11.5px; justify-content: flex-end; }
     .bps-arrow { display: none; }
 
-    /* Bigger touch targets */
-    .row { min-height: 42px; }
-    .row.level-2, .row.level-5 { min-height: 46px; }
+    /* Touch targets */
+    .row { min-height: 44px; }
+    .row.level-2, .row.level-5 { min-height: 48px; }
   }
 
   /* Very small: 380px and under */
   @media (max-width: 380px) {
     .col-header, .row {
-      grid-template-columns: 56px 1fr 62px 52px;
+      grid-template-columns: 54px 1fr 58px 52px 54px;
       padding: 0 8px;
-      gap: 4px;
+      gap: 5px;
     }
-    .col-header { padding: 5px 8px; }
+    .col-header { padding: 6px 8px; }
     .naics-badge { font-size: 8.5px; padding: 1px 4px; }
-    .header-controls { grid-template-columns: 1fr auto; }
-    .toggle-group { grid-column: 1 / -1; order: -1; }
+    .header-title h1 { font-size: 12px; }
   }
 </style>
 </head>
@@ -535,8 +635,8 @@
     <div class="header-title">
       <div class="header-logo"></div>
       <div>
-        <h1>C&amp;I Probability of Default</h1>
-        <p>LOAN COMMAND · 1Q 2026 · NAICS INDUSTRY BROWSER · v1.2</p>
+        <h1>Loan Command</h1>
+        <p>C&amp;I PROBABILITY OF DEFAULT · 1Q 2026</p>
       </div>
     </div>
     <div class="header-controls">
@@ -545,10 +645,6 @@
           <circle cx="6.5" cy="6.5" r="4.5"/><path d="M10.5 10.5l3.5 3.5"/>
         </svg>
         <input type="text" id="search" placeholder="Search industry or NAICS…" autocomplete="off" spellcheck="false">
-      </div>
-      <div class="toggle-group">
-        <button class="toggle-btn active" data-mode="base">Base PD</button>
-        <button class="toggle-btn" data-mode="adj">Adjusted PD</button>
       </div>
       <button class="ctrl-btn" id="expandAll">Expand All</button>
       <button class="ctrl-btn" id="collapseAll">Collapse All</button>
@@ -562,12 +658,22 @@
   </div>
 </div>
 
+<div class="mobile-banner">
+  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8">
+    <circle cx="8" cy="8" r="6.5"/>
+    <line x1="8" y1="7" x2="8" y2="11"/>
+    <circle cx="8" cy="5" r="0.5" fill="currentColor" stroke="none"/>
+  </svg>
+  <span>Showing PD, Volatility, and YoY change. Visit on desktop for the full experience — range bands, QoQ trends, and expandable sector drill-down.</span>
+</div>
+
 <div class="table-wrap">
   <div class="col-header">
     <div class="col-header-cell" data-sort="naics">NAICS <span class="sort-icon">↕</span></div>
     <div class="col-header-cell" data-sort="industry">Industry <span class="sort-icon">↕</span></div>
-    <div class="col-header-cell" data-sort="pd">PD % <span class="sort-icon">↕</span></div>
+    <div class="col-header-cell" data-sort="pd">PD <span class="sort-icon">↕</span></div>
     <div class="col-header-cell" data-sort="med">Range (L / Med / H) <span class="sort-icon">↕</span></div>
+    <div class="col-header-cell right" data-sort="vol">Vol <span class="sort-icon">↕</span></div>
     <div class="col-header-cell right" data-sort="yoy">YoY bps <span class="sort-icon">↕</span></div>
     <div class="col-header-cell right" data-sort="qoq">QoQ bps <span class="sort-icon">↕</span></div>
   </div>
@@ -578,8 +684,31 @@
   </div>
 </div>
 
+<div class="cta-banner">
+  <div class="cta-content">
+    <div class="cta-text">
+      <strong>Default risk is only half the answer.</strong>
+      Loan Command translates these probabilities into actual loan pricing, with state-level adjustments, Investor CRE coverage, and spread modeling built for community banks.
+    </div>
+    <div class="cta-buttons">
+      <a href="https://southstatecorrespondent.com/loan-pricing-model/?utm_source=ci-pod-widget&utm_medium=widget&utm_campaign=loan-command&utm_content=cta-pricing" target="_blank" rel="noopener" class="cta-btn cta-btn-secondary">
+        Loan Pricing Model
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 7h10M7 2l5 5-5 5"/>
+        </svg>
+      </a>
+      <a href="https://southstatecorrespondent.com/loan-command-free-signup/?utm_source=ci-pod-widget&utm_medium=widget&utm_campaign=loan-command&utm_content=cta-signup" target="_blank" rel="noopener" class="cta-btn cta-btn-primary">
+        Activate Free Account
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 7h10M7 2l5 5-5 5"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+</div>
+
 <div class="app-footer">
-  Source: Loan Command PODs 1Q 2026 · bps = basis points (1 bps = 0.01%) · Positive YoY/QoQ = increasing default risk
+  Source: Loan Command PODs 1Q 2026 · bps = basis points (1 bps = 0.01%) · Positive YoY/QoQ = increasing default risk · v1.7
 </div>
 
 <script>
@@ -589,7 +718,7 @@ const RAW = [{"naics":"11","industry":"Agriculture, Forestry, Fishing and Huntin
 const ALL_HIGH = Math.max(...RAW.map(d => d.high));
 
 // State
-let mode = 'base';       // 'base' or 'adj'
+const mode = 'adj'; // always adjusted
 let expandState = {};    // naics -> bool (open/closed)
 let searchTerm = '';
 let sortCol = null;
@@ -705,6 +834,24 @@ function highlight(text, term) {
   return text.substring(0, idx) + '<mark class="highlight">' + text.substring(idx, idx + term.length) + '</mark>' + text.substring(idx + term.length);
 }
 
+function pdHeat(v) {
+  if (v < 0.015) return 'pd-h1';
+  if (v < 0.02)  return 'pd-h2';
+  if (v < 0.03)  return 'pd-h3';
+  if (v < 0.045) return 'pd-h4';
+  if (v < 0.06)  return 'pd-h5';
+  return 'pd-h6';
+}
+
+function volHeat(v) {
+  if (v < 0.006) return 'vol-h1';
+  if (v < 0.009) return 'vol-h2';
+  if (v < 0.013) return 'vol-h3';
+  if (v < 0.018) return 'vol-h4';
+  if (v < 0.025) return 'vol-h5';
+  return 'vol-h6';
+}
+
 function renderRows() {
   const container = document.getElementById('rows');
   const empty = document.getElementById('emptyState');
@@ -718,6 +865,7 @@ function renderRows() {
       if (sortCol === 'industry') { av = a.industry; bv = b.industry; return sortDir * av.localeCompare(bv); }
       if (sortCol === 'pd') { av = mode === 'adj' ? a.pd_adj : a.pd; bv = mode === 'adj' ? b.pd_adj : b.pd; }
       if (sortCol === 'med') { av = a.med; bv = b.med; }
+      if (sortCol === 'vol') { av = a.vol; bv = b.vol; }
       if (sortCol === 'yoy') { av = mode === 'adj' ? a.yoy_adj : a.yoy; bv = mode === 'adj' ? b.yoy_adj : b.yoy; }
       if (sortCol === 'qoq') { av = mode === 'adj' ? a.qoq_adj : a.qoq; bv = mode === 'adj' ? b.qoq_adj : b.qoq; }
       return sortDir * (av - bv);
@@ -741,12 +889,12 @@ function renderRows() {
     const qoqVal = mode === 'adj' ? d.qoq_adj : d.qoq;
     const leaf = isLeaf(d) || searchTerm;
     const open = isOpen(d);
-    const adjDiff = d.pd_adj !== d.pd;
+    const adjDiff = false; // badge removed
+    const adjBadge = '';
 
     const expandClass = leaf ? 'leaf' : (open ? 'open' : '');
     const industryText = highlight(d.industry, searchTerm);
     const naicsText = highlight(d.naics, searchTerm);
-    const adjBadge = (mode === 'adj' && adjDiff) ? `<span class="adj-badge">ADJ</span>` : '';
 
     return `<div class="row level-${d.level}" data-naics="${d.naics}">
       <div class="cell-naics">
@@ -756,8 +904,9 @@ function renderRows() {
         <span class="naics-badge">${naicsText}</span>
       </div>
       <div class="cell-name">${industryText}</div>
-      <div class="cell-pd">${fmtPct(pdVal)}${adjBadge}</div>
+      <div class="cell-pd ${pdHeat(pdVal)}">${fmtPct(pdVal)}</div>
       ${rangeBar(d)}
+      <span class="cell-vol ${volHeat(d.vol)}">${fmtPct(d.vol)}</span>
       ${bpsCell(yoyVal)}
       ${bpsCell(qoqVal)}
     </div>`;
@@ -805,15 +954,6 @@ function updateStats(visible) {
 RAW.forEach(d => { if (d.level === 2 || d.level === 5) expandState[d.naics] = false; });
 
 // Controls
-document.querySelectorAll('.toggle-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    mode = btn.dataset.mode;
-    renderRows();
-  });
-});
-
 document.getElementById('expandAll').addEventListener('click', () => {
   RAW.forEach(d => { if (d.level === 2 || d.level === 5 || d.level === 3) expandState[d.naics] = true; });
   renderRows();
