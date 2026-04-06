@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>C&amp;I Probability of Default — 1Q 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  @font-face {
+    font-family: 'Cera Pro';
+    src: url('https://sscdwidgets.github.io/fonts/CeraPro-Thin.ttf') format('truetype');
+    font-weight: 300;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Cera Pro';
+    src: url('https://sscdwidgets.github.io/fonts/CeraPro-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Cera Pro';
+    src: url('https://sscdwidgets.github.io/fonts/CeraPro-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Cera Pro';
+    src: url('https://sscdwidgets.github.io/fonts/CeraPro-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-display: swap;
+  }
+</style>
+<style>
+  :root {
+    --navy: #002D72;
+    --navy-light: #003d99;
+    --gold: #FFBF3F;
+    --gold-dark: #e6a800;
+    --blue: #0960BB;
+    --gray: #4C4C4C;
+    --gray-light: #7a7a7a;
+    --bg: #F4F6FA;
+    --surface: #ffffff;
+    --border: #dde1eb;
+    --border-dark: #c5cad8;
+    --row-sector: #eef1f8;
+    --row-sub: #f8f9fc;
+    --text: #1a1a2e;
+    --text-muted: #6b7280;
+    --green: #0a7a3e;
+    --green-bg: #edfaf3;
+    --red: #b91c1c;
+    --red-bg: #fef2f2;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'Cera Pro', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 13px;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .app-header {
+    background: #ffffff;
+    border-bottom: 3px solid var(--navy);
+    padding: 12px 20px 10px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  .header-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .header-title {
+    flex: 1;
+    min-width: 180px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .header-logo {
+    width: 6px;
+    height: 36px;
+    background: var(--gold);
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+  .header-title h1 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: 0.01em;
+    line-height: 1.2;
+  }
+  .header-title p {
+    font-size: 10px;
+    color: var(--gray-light);
+    margin-top: 2px;
+    font-family: var(--mono);
+    letter-spacing: 0.05em;
+  }
+  .header-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  /* Search */
+  .search-wrap {
+    position: relative;
+  }
+  .search-wrap svg {
+    position: absolute;
+    left: 9px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gray-light);
+    pointer-events: none;
+    width: 14px; height: 14px;
+  }
+  #search {
+    background: #f4f6fa;
+    border: 1.5px solid var(--border-dark);
+    color: var(--text);
+    padding: 7px 10px 7px 30px;
+    border-radius: 6px;
+    font-family: var(--sans);
+    font-size: 12px;
+    width: 210px;
+    transition: all 0.2s;
+    outline: none;
+  }
+  #search::placeholder { color: var(--text-muted); }
+  #search:focus { background: #fff; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(9,96,187,0.1); }
+
+  /* Toggle */
+  .toggle-group {
+    display: flex;
+    background: #eef1f8;
+    border-radius: 6px;
+    padding: 2px;
+    gap: 2px;
+    border: 1px solid var(--border);
+  }
+  .toggle-btn {
+    background: transparent;
+    border: none;
+    color: var(--gray);
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 5px 11px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .toggle-btn.active {
+    background: var(--navy);
+    color: #fff;
+    font-weight: 600;
+  }
+  .toggle-btn:not(.active):hover { background: #dde3f0; color: var(--navy); }
+
+  /* Expand/collapse buttons */
+  .ctrl-btn {
+    background: #fff;
+    border: 1.5px solid var(--border-dark);
+    color: var(--gray);
+    font-family: var(--sans);
+    font-size: 11px;
+    padding: 5px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .ctrl-btn:hover { border-color: var(--navy); color: var(--navy); background: #f0f4fa; }
+
+  /* Stats bar */
+  .stats-bar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 8px;
+    border-top: 1px solid var(--border);
+    padding-top: 7px;
+    flex-wrap: wrap;
+  }
+  .stat-chip {
+    font-size: 10px;
+    font-family: var(--mono);
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .stat-chip span {
+    color: var(--navy);
+    font-weight: 600;
+  }
+
+  /* ── TABLE AREA ── */
+  .table-wrap {
+    padding: 0;
+  }
+
+  /* Column header */
+  .col-header {
+    display: grid;
+    grid-template-columns: 90px 1fr 80px 130px 70px 70px;
+    padding: 7px 16px;
+    background: #eef1f8;
+    border-bottom: 2px solid var(--gold);
+    border-top: 1px solid var(--border);
+    position: sticky;
+    top: 88px;
+    z-index: 90;
+    gap: 8px;
+  }
+  .col-header-cell {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--gray-light);
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: color 0.15s;
+  }
+  .col-header-cell:hover { color: var(--navy); }
+  .col-header-cell.active { color: var(--navy); }
+  .sort-icon { font-size: 9px; opacity: 0.5; }
+  .col-header-cell.right { justify-content: flex-end; }
+
+  /* Rows */
+  .rows-container { }
+
+  .row {
+    display: grid;
+    grid-template-columns: 90px 1fr 80px 130px 70px 70px;
+    gap: 8px;
+    padding: 0 16px;
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+    min-height: 36px;
+    transition: background 0.1s;
+    cursor: default;
+  }
+  .row.level-2 {
+    background: #e8ecf5;
+    min-height: 40px;
+    cursor: pointer;
+    border-bottom: 2px solid #c5ccd8;
+  }
+  .row.level-2:hover { background: #dde3f0; }
+  .row.level-3 {
+    background: #f3f5fb;
+    cursor: pointer;
+  }
+  .row.level-3:hover { background: #eceff8; }
+  .row.level-4 { background: #fff; }
+  .row.level-4:hover { background: #fafbfe; }
+  .row.level-5 {
+    background: #e3e6ee;
+    min-height: 40px;
+    cursor: pointer;
+    border-bottom: 2px solid #c5ccd8;
+  }
+  .row.level-5:hover { background: #d8dcea; }
+
+  /* Hide children */
+  .row.hidden { display: none; }
+
+  /* NAICS cell */
+  .cell-naics {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .expand-btn {
+    width: 16px;
+    height: 16px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    flex-shrink: 0;
+    transition: transform 0.2s;
+    color: var(--gray-light);
+  }
+  .expand-btn svg { width: 10px; height: 10px; }
+  .expand-btn.open { transform: rotate(90deg); }
+  .expand-btn.leaf { opacity: 0; pointer-events: none; }
+  
+  .naics-badge {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 500;
+    padding: 2px 6px;
+    border-radius: 3px;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+  }
+  .level-2 .naics-badge { background: var(--navy); color: #fff; font-weight: 600; }
+  .level-3 .naics-badge { background: var(--blue); color: #fff; }
+  .level-4 .naics-badge { background: #e8ecf5; color: var(--navy); }
+  .level-5 .naics-badge { background: var(--navy); color: #fff; font-weight: 600; }
+
+  /* Industry name */
+  .cell-name {
+    font-size: 12px;
+    line-height: 1.3;
+    padding: 4px 0;
+  }
+  .level-2 .cell-name { font-weight: 700; font-size: 12.5px; color: var(--navy); }
+  .level-3 .cell-name { font-weight: 500; color: #2a3a5e; }
+  .level-4 .cell-name { font-weight: 400; color: var(--gray); }
+  .level-5 .cell-name { font-weight: 700; font-size: 12.5px; color: var(--navy); }
+
+  /* PD cell */
+  .cell-pd {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 600;
+    text-align: right;
+    color: var(--text);
+  }
+  .level-2 .cell-pd { font-size: 14px; }
+  .adj-badge {
+    display: inline-block;
+    font-size: 8px;
+    background: var(--gold);
+    color: var(--navy);
+    padding: 1px 3px;
+    border-radius: 2px;
+    margin-left: 3px;
+    font-weight: 700;
+    vertical-align: middle;
+    letter-spacing: 0.04em;
+  }
+
+  /* Range bar */
+  .cell-range {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .range-bar-wrap {
+    position: relative;
+    height: 6px;
+    background: #e0e4ed;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .range-bar-fill {
+    position: absolute;
+    height: 100%;
+    border-radius: 3px;
+    background: linear-gradient(90deg, #d4e8f5 0%, var(--blue) 50%, #0d3a7a 100%);
+  }
+  .range-med-marker {
+    position: absolute;
+    top: -1px;
+    width: 2px;
+    height: 8px;
+    background: var(--gold-dark);
+    border-radius: 1px;
+    transform: translateX(-50%);
+  }
+  .range-labels {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text-muted);
+    line-height: 1;
+  }
+  .range-med-val {
+    font-weight: 600;
+    color: var(--blue);
+  }
+
+  /* YoY / QoQ */
+  .cell-bps {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    text-align: right;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 3px;
+  }
+  .bps-up { color: var(--red); }
+  .bps-down { color: var(--green); }
+  .bps-flat { color: var(--text-muted); }
+  .bps-arrow { font-size: 10px; }
+
+  /* Search highlight */
+  .highlight { background: rgba(255,191,63,0.4); border-radius: 2px; }
+
+  /* Empty state */
+  .empty-state {
+    text-align: center;
+    padding: 48px 20px;
+    color: var(--text-muted);
+  }
+  .empty-state h3 { font-size: 14px; font-weight: 500; margin-bottom: 6px; }
+  .empty-state p { font-size: 12px; }
+
+  /* Footer */
+  .app-footer {
+    text-align: center;
+    padding: 16px;
+    font-size: 10.5px;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border);
+    margin-top: 8px;
+    font-family: var(--mono);
+  }
+
+  /* ── RESPONSIVE ── */
+
+  /* Medium screens: hide QoQ */
+  @media (max-width: 860px) {
+    .col-header, .row {
+      grid-template-columns: 90px 1fr 76px 120px 68px;
+    }
+    .col-header-cell:nth-child(6),
+    .row > .cell-bps:last-child { display: none; }
+  }
+
+  /* Small screens */
+  @media (max-width: 600px) {
+    .app-header { padding: 10px 14px 8px; }
+    .header-title h1 { font-size: 13.5px; }
+    .header-title p { display: none; }
+    .header-logo { height: 28px; }
+
+    /* Controls: search full-width on its own line, toggle + expand inline below */
+    .header-top { flex-wrap: wrap; gap: 8px; }
+    .header-controls {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 6px;
+      align-items: center;
+    }
+    .search-wrap { grid-column: 1 / -1; }
+    #search {
+      width: 100%;
+      font-size: 16px; /* prevents iOS zoom */
+      padding: 9px 10px 9px 32px;
+    }
+    .toggle-group { white-space: nowrap; }
+    .toggle-btn { padding: 6px 9px; font-size: 11px; }
+    .ctrl-btn { display: none; }
+
+    /* Stats bar: single scrollable row */
+    .stats-bar {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      gap: 12px;
+      padding-bottom: 2px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .stats-bar::-webkit-scrollbar { display: none; }
+    .stat-chip { white-space: nowrap; font-size: 10px; }
+    .stat-chip:nth-child(3) { display: none; }
+
+    /* Table */
+    .col-header, .row {
+      grid-template-columns: 66px 1fr 68px 58px;
+      padding: 0 10px;
+      gap: 6px;
+    }
+    .col-header { padding: 6px 10px; }
+    .col-header-cell:nth-child(4),
+    .col-header-cell:nth-child(5),
+    .col-header-cell:nth-child(6),
+    .row > .cell-range,
+    .row > .cell-bps:last-child { display: none; }
+
+    .naics-badge { font-size: 9px; padding: 2px 5px; }
+    .expand-btn svg { width: 9px; height: 9px; }
+    .cell-name { font-size: 11.5px; }
+    .cell-pd { font-size: 12px; }
+    .cell-bps { font-size: 11px; gap: 2px; }
+    .bps-arrow { display: none; }
+
+    /* Bigger touch targets */
+    .row { min-height: 42px; }
+    .row.level-2, .row.level-5 { min-height: 46px; }
+  }
+
+  /* Very small: 380px and under */
+  @media (max-width: 380px) {
+    .col-header, .row {
+      grid-template-columns: 56px 1fr 62px 52px;
+      padding: 0 8px;
+      gap: 4px;
+    }
+    .col-header { padding: 5px 8px; }
+    .naics-badge { font-size: 8.5px; padding: 1px 4px; }
+    .header-controls { grid-template-columns: 1fr auto; }
+    .toggle-group { grid-column: 1 / -1; order: -1; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <div class="header-top">
+    <div class="header-title">
+      <div class="header-logo"></div>
+      <div>
+        <h1>C&amp;I Probability of Default</h1>
+        <p>LOAN COMMAND · 1Q 2026 · NAICS INDUSTRY BROWSER</p>
+      </div>
+    </div>
+    <div class="header-controls">
+      <div class="search-wrap">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="6.5" cy="6.5" r="4.5"/><path d="M10.5 10.5l3.5 3.5"/>
+        </svg>
+        <input type="text" id="search" placeholder="Search industry or NAICS…" autocomplete="off" spellcheck="false">
+      </div>
+      <div class="toggle-group">
+        <button class="toggle-btn active" data-mode="base">Base PD</button>
+        <button class="toggle-btn" data-mode="adj">Adjusted PD</button>
+      </div>
+      <button class="ctrl-btn" id="expandAll">Expand All</button>
+      <button class="ctrl-btn" id="collapseAll">Collapse All</button>
+    </div>
+  </div>
+  <div class="stats-bar">
+    <div class="stat-chip">Industries: <span id="stat-count">—</span></div>
+    <div class="stat-chip">Avg PD: <span id="stat-avg">—</span></div>
+    <div class="stat-chip">Highest PD: <span id="stat-max">—</span></div>
+    <div class="stat-chip">Avg YoY: <span id="stat-yoy">—</span></div>
+  </div>
+</div>
+
+<div class="table-wrap">
+  <div class="col-header">
+    <div class="col-header-cell" data-sort="naics">NAICS <span class="sort-icon">↕</span></div>
+    <div class="col-header-cell" data-sort="industry">Industry <span class="sort-icon">↕</span></div>
+    <div class="col-header-cell right" data-sort="pd">PD % <span class="sort-icon">↕</span></div>
+    <div class="col-header-cell" data-sort="med">Range (L / Med / H) <span class="sort-icon">↕</span></div>
+    <div class="col-header-cell right" data-sort="yoy">YoY bps <span class="sort-icon">↕</span></div>
+    <div class="col-header-cell right" data-sort="qoq">QoQ bps <span class="sort-icon">↕</span></div>
+  </div>
+  <div class="rows-container" id="rows"></div>
+  <div class="empty-state" id="emptyState" style="display:none">
+    <h3>No matching industries</h3>
+    <p>Try a different search term or NAICS code.</p>
+  </div>
+</div>
+
+<div class="app-footer">
+  Source: Loan Command PODs 1Q 2026 · bps = basis points (1 bps = 0.01%) · Positive YoY/QoQ = increasing default risk
+</div>
+
+<script>
+const RAW = [{"naics":"11","industry":"Agriculture, Forestry, Fishing and Hunting","level":2,"pd":0.017,"pd_adj":0.017,"low":0.0069,"med":0.0122,"high":0.0213,"vol":0.0072,"yoy":19,"qoq":37,"yoy_adj":19,"qoq_adj":37,"adj":0},{"naics":"111","industry":"Crop Production","level":3,"pd":0.0153,"pd_adj":0.0206,"low":0.0064,"med":0.0111,"high":0.0193,"vol":0.00645,"yoy":33,"qoq":42,"yoy_adj":86,"qoq_adj":95,"adj":53},{"naics":"1111","industry":"Oilseed and Grain Farming","level":4,"pd":0.0131,"pd_adj":0.0181,"low":0.0059,"med":0.0099,"high":0.0165,"vol":0.0053,"yoy":28,"qoq":39,"yoy_adj":78,"qoq_adj":89,"adj":50},{"naics":"1112","industry":"Vegetable and Melon Farming","level":4,"pd":0.0161,"pd_adj":0.0219,"low":0.0067,"med":0.0116,"high":0.0203,"vol":0.0068,"yoy":30,"qoq":38,"yoy_adj":88,"qoq_adj":96,"adj":58},{"naics":"1113","industry":"Fruit and Tree Nut Farming","level":4,"pd":0.0171,"pd_adj":0.0216,"low":0.0067,"med":0.012,"high":0.0214,"vol":0.00735,"yoy":28,"qoq":40,"yoy_adj":73,"qoq_adj":85,"adj":45},{"naics":"1114","industry":"Greenhouse, Nursery, and Floriculture Production","level":4,"pd":0.0161,"pd_adj":0.0166,"low":0.0066,"med":0.0116,"high":0.0202,"vol":0.0068,"yoy":20,"qoq":37,"yoy_adj":25,"qoq_adj":42,"adj":5},{"naics":"1119","industry":"Other Crop Farming","level":4,"pd":0.0159,"pd_adj":0.0184,"low":0.0066,"med":0.0115,"high":0.02,"vol":0.0067,"yoy":35,"qoq":44,"yoy_adj":60,"qoq_adj":69,"adj":25},{"naics":"112","industry":"Animal Production and Aquaculture","level":3,"pd":0.0138,"pd_adj":0.0138,"low":0.0059,"med":0.0101,"high":0.0174,"vol":0.00575,"yoy":28,"qoq":36,"yoy_adj":28,"qoq_adj":36,"adj":0},{"naics":"1121","industry":"Cattle Ranching and Farming","level":4,"pd":0.0136,"pd_adj":0.0136,"low":0.006,"med":0.0101,"high":0.0172,"vol":0.0056,"yoy":30,"qoq":36,"yoy_adj":30,"qoq_adj":36,"adj":0},{"naics":"1122","industry":"Hog and Pig Farming","level":4,"pd":0.0114,"pd_adj":0.0114,"low":0.0051,"med":0.0086,"high":0.0143,"vol":0.0046,"yoy":30,"qoq":31,"yoy_adj":30,"qoq_adj":31,"adj":0},{"naics":"1123","industry":"Poultry and Egg Production","level":4,"pd":0.0159,"pd_adj":0.0159,"low":0.0065,"med":0.0114,"high":0.02,"vol":0.00675,"yoy":28,"qoq":47,"yoy_adj":28,"qoq_adj":47,"adj":0},{"naics":"1124","industry":"Sheep and Goat Farming","level":4,"pd":0.0142,"pd_adj":0.0142,"low":0.0058,"med":0.0101,"high":0.0178,"vol":0.006,"yoy":31,"qoq":38,"yoy_adj":31,"qoq_adj":38,"adj":0},{"naics":"1125","industry":"Aquaculture","level":4,"pd":0.0137,"pd_adj":0.0137,"low":0.0056,"med":0.0099,"high":0.0172,"vol":0.0058,"yoy":28,"qoq":36,"yoy_adj":28,"qoq_adj":36,"adj":0},{"naics":"1129","industry":"Other Animal Production","level":4,"pd":0.0152,"pd_adj":0.0152,"low":0.0064,"med":0.0111,"high":0.0192,"vol":0.0064,"yoy":22,"qoq":32,"yoy_adj":22,"qoq_adj":32,"adj":0},{"naics":"113","industry":"Forestry and Logging","level":3,"pd":0.0211,"pd_adj":0.0216,"low":0.0079,"med":0.0145,"high":0.0265,"vol":0.0093,"yoy":-60,"qoq":-9,"yoy_adj":-55,"qoq_adj":-4,"adj":5},{"naics":"1131","industry":"Timber Tract Operations","level":4,"pd":0.0172,"pd_adj":0.0172,"low":0.0066,"med":0.012,"high":0.0215,"vol":0.00745,"yoy":-47,"qoq":-4,"yoy_adj":-47,"qoq_adj":-4,"adj":0},{"naics":"1132","industry":"Forest Nurseries and Gathering of Forest Products","level":4,"pd":0.0209,"pd_adj":0.0209,"low":0.0082,"med":0.0147,"high":0.0263,"vol":0.00905,"yoy":-17,"qoq":14,"yoy_adj":-17,"qoq_adj":14,"adj":0},{"naics":"1133","industry":"Logging","level":4,"pd":0.0213,"pd_adj":0.0213,"low":0.0079,"med":0.0146,"high":0.0268,"vol":0.00945,"yoy":-63,"qoq":-11,"yoy_adj":-63,"qoq_adj":-11,"adj":0},{"naics":"114","industry":"Fishing, Hunting and Trapping","level":3,"pd":0.0152,"pd_adj":0.0152,"low":0.0066,"med":0.0112,"high":0.019,"vol":0.0062,"yoy":8,"qoq":16,"yoy_adj":8,"qoq_adj":16,"adj":0},{"naics":"1141","industry":"Fishing","level":4,"pd":0.0153,"pd_adj":0.0153,"low":0.0066,"med":0.0113,"high":0.0191,"vol":0.00625,"yoy":4,"qoq":23,"yoy_adj":4,"qoq_adj":23,"adj":0},{"naics":"1142","industry":"Hunting and Trapping","level":4,"pd":0.0151,"pd_adj":0.0151,"low":0.0066,"med":0.0112,"high":0.0189,"vol":0.00615,"yoy":11,"qoq":11,"yoy_adj":11,"qoq_adj":11,"adj":0},{"naics":"115","industry":"Support Activities for Agriculture and Forestry","level":3,"pd":0.0201,"pd_adj":0.0201,"low":0.0084,"med":0.0146,"high":0.0254,"vol":0.0085,"yoy":11,"qoq":38,"yoy_adj":11,"qoq_adj":38,"adj":0},{"naics":"1151","industry":"Support Activities for Crop Production","level":4,"pd":0.0204,"pd_adj":0.0204,"low":0.0087,"med":0.0149,"high":0.0257,"vol":0.0085,"yoy":19,"qoq":47,"yoy_adj":19,"qoq_adj":47,"adj":0},{"naics":"1152","industry":"Support Activities for Animal Production","level":4,"pd":0.0168,"pd_adj":0.0168,"low":0.0071,"med":0.0123,"high":0.0212,"vol":0.00705,"yoy":-2,"qoq":25,"yoy_adj":-2,"qoq_adj":25,"adj":0},{"naics":"1153","industry":"Support Activities for Forestry","level":4,"pd":0.023,"pd_adj":0.023,"low":0.0089,"med":0.016,"high":0.0289,"vol":0.01,"yoy":-5,"qoq":19,"yoy_adj":-5,"qoq_adj":19,"adj":0},{"naics":"21","industry":"Mining, Quarrying, and Oil and Gas Extraction","level":2,"pd":0.0221,"pd_adj":0.0221,"low":0.0055,"med":0.0122,"high":0.0272,"vol":0.01085,"yoy":-21,"qoq":-11,"yoy_adj":-21,"qoq_adj":-11,"adj":0},{"naics":"211","industry":"Oil and Gas Extraction","level":3,"pd":0.0185,"pd_adj":0.0165,"low":0.0057,"med":0.0114,"high":0.0228,"vol":0.00855,"yoy":-18,"qoq":7,"yoy_adj":-38,"qoq_adj":-13,"adj":-20},{"naics":"2111","industry":"Oil and Gas Extraction","level":4,"pd":0.0185,"pd_adj":0.0165,"low":0.0057,"med":0.0114,"high":0.0228,"vol":0.00855,"yoy":-18,"qoq":7,"yoy_adj":-38,"qoq_adj":-13,"adj":-20},{"naics":"212","industry":"Mining (except Oil and Gas)","level":3,"pd":0.0271,"pd_adj":0.0276,"low":0.005,"med":0.0128,"high":0.0331,"vol":0.01405,"yoy":-2,"qoq":-14,"yoy_adj":3,"qoq_adj":-9,"adj":5},{"naics":"2121","industry":"Coal Mining","level":4,"pd":0.0164,"pd_adj":0.0164,"low":0.0065,"med":0.0115,"high":0.0204,"vol":0.00695,"yoy":-89,"qoq":-35,"yoy_adj":-89,"qoq_adj":-35,"adj":0},{"naics":"2122","industry":"Metal Ore Mining","level":4,"pd":0.025,"pd_adj":0.025,"low":0.0076,"med":0.0154,"high":0.0312,"vol":0.0118,"yoy":-7,"qoq":-28,"yoy_adj":-7,"qoq_adj":-28,"adj":0},{"naics":"2123","industry":"Nonmetallic Mineral Mining and Quarrying","level":4,"pd":0.0278,"pd_adj":0.0278,"low":0.0047,"med":0.0127,"high":0.034,"vol":0.01465,"yoy":1,"qoq":-16,"yoy_adj":1,"qoq_adj":-16,"adj":0},{"naics":"213","industry":"Support Activities for Mining","level":3,"pd":0.0225,"pd_adj":0.023,"low":0.0056,"med":0.0124,"high":0.0276,"vol":0.011,"yoy":-44,"qoq":-34,"yoy_adj":-39,"qoq_adj":-29,"adj":5},{"naics":"2131","industry":"Support Activities for Mining","level":4,"pd":0.0225,"pd_adj":0.023,"low":0.0056,"med":0.0124,"high":0.0276,"vol":0.011,"yoy":-44,"qoq":-34,"yoy_adj":-39,"qoq_adj":-29,"adj":5},{"naics":"23","industry":"Construction","level":2,"pd":0.0263,"pd_adj":0.0283,"low":0.005,"med":0.0127,"high":0.0322,"vol":0.0136,"yoy":-40,"qoq":-16,"yoy_adj":-20,"qoq_adj":4,"adj":20},{"naics":"236","industry":"Construction of Buildings","level":3,"pd":0.0271,"pd_adj":0.0294,"low":0.0052,"med":0.0131,"high":0.0331,"vol":0.01395,"yoy":-53,"qoq":-16,"yoy_adj":-30,"qoq_adj":7,"adj":23},{"naics":"2361","industry":"Residential Building Construction","level":4,"pd":0.0278,"pd_adj":0.0305,"low":0.0053,"med":0.0134,"high":0.034,"vol":0.01435,"yoy":-55,"qoq":-17,"yoy_adj":-28,"qoq_adj":10,"adj":27},{"naics":"2362","industry":"Nonresidential Building Construction","level":4,"pd":0.0236,"pd_adj":0.0262,"low":0.0047,"med":0.0116,"high":0.0287,"vol":0.012,"yoy":-41,"qoq":-14,"yoy_adj":-15,"qoq_adj":12,"adj":26},{"naics":"237","industry":"Heavy and Civil Engineering Construction","level":3,"pd":0.026,"pd_adj":0.028,"low":0.0049,"med":0.0124,"high":0.0317,"vol":0.0134,"yoy":-31,"qoq":-5,"yoy_adj":-11,"qoq_adj":15,"adj":20},{"naics":"2371","industry":"Utility System Construction","level":4,"pd":0.0234,"pd_adj":0.0249,"low":0.005,"med":0.012,"high":0.0286,"vol":0.0118,"yoy":-25,"qoq":-11,"yoy_adj":-10,"qoq_adj":4,"adj":15},{"naics":"2372","industry":"Land Subdivision","level":4,"pd":0.0249,"pd_adj":0.0249,"low":0.0055,"med":0.013,"high":0.0305,"vol":0.0125,"yoy":-68,"qoq":-4,"yoy_adj":-68,"qoq_adj":-4,"adj":0},{"naics":"2373","industry":"Highway, Street, and Bridge Construction","level":4,"pd":0.0245,"pd_adj":0.0255,"low":0.0045,"med":0.0116,"high":0.0299,"vol":0.0127,"yoy":-33,"qoq":2,"yoy_adj":-23,"qoq_adj":12,"adj":10},{"naics":"2379","industry":"Other Heavy and Civil Engineering Construction","level":4,"pd":0.033,"pd_adj":0.033,"low":0.0047,"med":0.0138,"high":0.0404,"vol":0.01785,"yoy":-11,"qoq":-11,"yoy_adj":-11,"qoq_adj":-11,"adj":0},{"naics":"238","industry":"Specialty Trade Contractors","level":3,"pd":0.0268,"pd_adj":0.0268,"low":0.005,"med":0.0128,"high":0.0328,"vol":0.0139,"yoy":-34,"qoq":-17,"yoy_adj":-34,"qoq_adj":-17,"adj":0},{"naics":"2381","industry":"Foundation, Structure, and Building Exterior Contractors","level":4,"pd":0.025,"pd_adj":0.025,"low":0.0048,"med":0.0122,"high":0.0305,"vol":0.01285,"yoy":-34,"qoq":-14,"yoy_adj":-34,"qoq_adj":-14,"adj":0},{"naics":"2382","industry":"Building Equipment Contractors","level":4,"pd":0.0206,"pd_adj":0.0211,"low":0.0051,"med":0.0114,"high":0.025,"vol":0.00995,"yoy":-42,"qoq":-17,"yoy_adj":-37,"qoq_adj":-12,"adj":5},{"naics":"2383","industry":"Building Finishing Contractors","level":4,"pd":0.024,"pd_adj":0.024,"low":0.0053,"med":0.0125,"high":0.0294,"vol":0.01205,"yoy":-40,"qoq":-20,"yoy_adj":-40,"qoq_adj":-20,"adj":0},{"naics":"2389","industry":"Other Specialty Trade Contractors","level":4,"pd":0.0307,"pd_adj":0.0307,"low":0.0049,"med":0.0136,"high":0.0376,"vol":0.01635,"yoy":-31,"qoq":-19,"yoy_adj":-31,"qoq_adj":-19,"adj":0},{"naics":"31-33","industry":"Manufacturing","level":5,"pd":0.0216,"pd_adj":0.0216,"low":0.0058,"med":0.0124,"high":0.0269,"vol":0.01055,"yoy":-53,"qoq":-16,"yoy_adj":-53,"qoq_adj":-16,"adj":0},{"naics":"311","industry":"Food Manufacturing","level":3,"pd":0.0279,"pd_adj":0.0289,"low":0.0067,"med":0.0152,"high":0.0347,"vol":0.014,"yoy":-57,"qoq":-5,"yoy_adj":-47,"qoq_adj":5,"adj":10},{"naics":"3111","industry":"Animal Food Manufacturing","level":4,"pd":0.0171,"pd_adj":0.0171,"low":0.006,"med":0.0112,"high":0.0212,"vol":0.0076,"yoy":-44,"qoq":-13,"yoy_adj":-44,"qoq_adj":-13,"adj":0},{"naics":"3112","industry":"Grain and Oilseed Milling","level":4,"pd":0.0197,"pd_adj":0.0197,"low":0.0058,"med":0.0119,"high":0.0244,"vol":0.0093,"yoy":-46,"qoq":23,"yoy_adj":-46,"qoq_adj":23,"adj":0},{"naics":"3113","industry":"Sugar and Confectionery Product Manufacturing","level":4,"pd":0.0243,"pd_adj":0.0248,"low":0.0065,"med":0.014,"high":0.0302,"vol":0.01185,"yoy":-98,"qoq":-57,"yoy_adj":-93,"qoq_adj":-52,"adj":5},{"naics":"3114","industry":"Fruit and Vegetable Preserving and Specialty Food Manufacturing","level":4,"pd":0.029,"pd_adj":0.029,"low":0.006,"med":0.0147,"high":0.036,"vol":0.015,"yoy":-31,"qoq":57,"yoy_adj":-31,"qoq_adj":57,"adj":0},{"naics":"3115","industry":"Dairy Product Manufacturing","level":4,"pd":0.0219,"pd_adj":0.0219,"low":0.0062,"med":0.0129,"high":0.027,"vol":0.0104,"yoy":-32,"qoq":5,"yoy_adj":-32,"qoq_adj":5,"adj":0},{"naics":"3116","industry":"Animal Slaughtering and Processing","level":4,"pd":0.0252,"pd_adj":0.0252,"low":0.0052,"med":0.0127,"high":0.0312,"vol":0.013,"yoy":32,"qoq":7,"yoy_adj":32,"qoq_adj":7,"adj":0},{"naics":"3117","industry":"Seafood Product Preparation and Packaging","level":4,"pd":0.0167,"pd_adj":0.0167,"low":0.0068,"med":0.0119,"high":0.0206,"vol":0.0069,"yoy":-79,"qoq":-47,"yoy_adj":-79,"qoq_adj":-47,"adj":0},{"naics":"3118","industry":"Bakeries and Tortilla Manufacturing","level":4,"pd":0.0307,"pd_adj":0.0307,"low":0.0078,"med":0.0173,"high":0.0383,"vol":0.01525,"yoy":-80,"qoq":-4,"yoy_adj":-80,"qoq_adj":-4,"adj":0},{"naics":"3119","industry":"Other Food Manufacturing","level":4,"pd":0.0283,"pd_adj":0.0283,"low":0.006,"med":0.0145,"high":0.035,"vol":0.0145,"yoy":-75,"qoq":-36,"yoy_adj":-75,"qoq_adj":-36,"adj":0},{"naics":"312","industry":"Beverage and Tobacco Product Manufacturing","level":3,"pd":0.0278,"pd_adj":0.0278,"low":0.0063,"med":0.0147,"high":0.0345,"vol":0.0141,"yoy":-94,"qoq":-49,"yoy_adj":-94,"qoq_adj":-49,"adj":0},{"naics":"3121","industry":"Beverage Manufacturing","level":4,"pd":0.0279,"pd_adj":0.0279,"low":0.0063,"med":0.0147,"high":0.0345,"vol":0.0141,"yoy":-92,"qoq":-50,"yoy_adj":-92,"qoq_adj":-50,"adj":0},{"naics":"3122","industry":"Tobacco Manufacturing","level":4,"pd":0.0248,"pd_adj":0.0248,"low":0.0063,"med":0.0138,"high":0.0303,"vol":0.012,"yoy":-115,"qoq":-14,"yoy_adj":-115,"qoq_adj":-14,"adj":0},{"naics":"313","industry":"Textile Mills","level":3,"pd":0.0197,"pd_adj":0.0197,"low":0.0062,"med":0.0122,"high":0.024,"vol":0.0089,"yoy":-68,"qoq":-18,"yoy_adj":-68,"qoq_adj":-18,"adj":0},{"naics":"3131","industry":"Fiber, Yarn, and Thread Mills","level":4,"pd":0.0211,"pd_adj":0.0221,"low":0.0066,"med":0.013,"high":0.0255,"vol":0.00945,"yoy":-50,"qoq":-16,"yoy_adj":-40,"qoq_adj":-6,"adj":10},{"naics":"3132","industry":"Fabric Mills","level":4,"pd":0.0185,"pd_adj":0.019,"low":0.0061,"med":0.0117,"high":0.0226,"vol":0.00825,"yoy":-112,"qoq":-17,"yoy_adj":-107,"qoq_adj":-12,"adj":5},{"naics":"3133","industry":"Textile and Fabric Finishing and Fabric Coating Mills","level":4,"pd":0.0197,"pd_adj":0.0197,"low":0.006,"med":0.0121,"high":0.0241,"vol":0.00905,"yoy":-36,"qoq":-23,"yoy_adj":-36,"qoq_adj":-23,"adj":0},{"naics":"314","industry":"Textile Product Mills","level":3,"pd":0.0206,"pd_adj":0.0206,"low":0.0059,"med":0.0122,"high":0.0252,"vol":0.00965,"yoy":-40,"qoq":-11,"yoy_adj":-40,"qoq_adj":-11,"adj":0},{"naics":"3141","industry":"Textile Furnishings Mills","level":4,"pd":0.0207,"pd_adj":0.0207,"low":0.0059,"med":0.0123,"high":0.0255,"vol":0.0098,"yoy":-11,"qoq":11,"yoy_adj":-11,"qoq_adj":11,"adj":0},{"naics":"3149","industry":"Other Textile Product Mills","level":4,"pd":0.0204,"pd_adj":0.0204,"low":0.0058,"med":0.0121,"high":0.0251,"vol":0.00965,"yoy":-59,"qoq":-28,"yoy_adj":-59,"qoq_adj":-28,"adj":0},{"naics":"315","industry":"Apparel Manufacturing","level":3,"pd":0.0221,"pd_adj":0.0221,"low":0.0069,"med":0.0137,"high":0.027,"vol":0.01005,"yoy":-109,"qoq":-42,"yoy_adj":-109,"qoq_adj":-42,"adj":0},{"naics":"3151","industry":"Apparel Knitting Mills","level":4,"pd":0.0175,"pd_adj":0.018,"low":0.0054,"med":0.0108,"high":0.0213,"vol":0.00795,"yoy":-43,"qoq":0,"yoy_adj":-38,"qoq_adj":5,"adj":5},{"naics":"3152","industry":"Cut and Sew Apparel Manufacturing","level":4,"pd":0.0222,"pd_adj":0.0222,"low":0.007,"med":0.0139,"high":0.0271,"vol":0.01005,"yoy":-115,"qoq":-49,"yoy_adj":-115,"qoq_adj":-49,"adj":0},{"naics":"3159","industry":"Apparel Accessories and Other Apparel Manufacturing","level":4,"pd":0.0239,"pd_adj":0.0239,"low":0.0064,"med":0.0138,"high":0.0296,"vol":0.0116,"yoy":-102,"qoq":28,"yoy_adj":-102,"qoq_adj":28,"adj":0},{"naics":"316","industry":"Leather and Allied Product Manufacturing","level":3,"pd":0.0192,"pd_adj":0.0192,"low":0.0066,"med":0.0125,"high":0.0238,"vol":0.0086,"yoy":-60,"qoq":-13,"yoy_adj":-60,"qoq_adj":-13,"adj":0},{"naics":"3161","industry":"Leather and Hide Tanning and Finishing","level":4,"pd":0.015,"pd_adj":0.015,"low":0.0062,"med":0.0107,"high":0.0186,"vol":0.0062,"yoy":-54,"qoq":-37,"yoy_adj":-54,"qoq_adj":-37,"adj":0},{"naics":"3162","industry":"Footwear Manufacturing","level":4,"pd":0.017,"pd_adj":0.017,"low":0.0073,"med":0.0125,"high":0.0213,"vol":0.007,"yoy":-92,"qoq":-40,"yoy_adj":-92,"qoq_adj":-40,"adj":0},{"naics":"3169","industry":"Other Leather and Allied Product Manufacturing","level":4,"pd":0.0208,"pd_adj":0.0208,"low":0.0065,"med":0.013,"high":0.0257,"vol":0.0096,"yoy":-53,"qoq":1,"yoy_adj":-53,"qoq_adj":1,"adj":0},{"naics":"321","industry":"Wood Product Manufacturing","level":3,"pd":0.0185,"pd_adj":0.0185,"low":0.0053,"med":0.011,"high":0.023,"vol":0.00885,"yoy":-42,"qoq":-26,"yoy_adj":-42,"qoq_adj":-26,"adj":0},{"naics":"3211","industry":"Sawmills and Wood Preservation","level":4,"pd":0.0171,"pd_adj":0.0171,"low":0.0055,"med":0.0108,"high":0.0214,"vol":0.00795,"yoy":-41,"qoq":-20,"yoy_adj":-41,"qoq_adj":-20,"adj":0},{"naics":"3212","industry":"Veneer, Plywood, and Engineered Wood Product Manufacturing","level":4,"pd":0.0134,"pd_adj":0.0134,"low":0.0057,"med":0.0097,"high":0.0166,"vol":0.00545,"yoy":-57,"qoq":-10,"yoy_adj":-57,"qoq_adj":-10,"adj":0},{"naics":"3219","industry":"Other Wood Product Manufacturing","level":4,"pd":0.0199,"pd_adj":0.0199,"low":0.0052,"med":0.0113,"high":0.0248,"vol":0.0098,"yoy":-42,"qoq":-34,"yoy_adj":-42,"qoq_adj":-34,"adj":0},{"naics":"322","industry":"Paper Manufacturing","level":3,"pd":0.0156,"pd_adj":0.0171,"low":0.0059,"med":0.0108,"high":0.0195,"vol":0.0068,"yoy":-77,"qoq":-36,"yoy_adj":-62,"qoq_adj":-21,"adj":15},{"naics":"3221","industry":"Pulp, Paper, and Paperboard Mills","level":4,"pd":0.0205,"pd_adj":0.022,"low":0.0062,"med":0.0126,"high":0.0257,"vol":0.00975,"yoy":-142,"qoq":-43,"yoy_adj":-127,"qoq_adj":-28,"adj":15},{"naics":"3222","industry":"Converted Paper Product Manufacturing","level":4,"pd":0.0149,"pd_adj":0.0149,"low":0.0059,"med":0.0105,"high":0.0186,"vol":0.00635,"yoy":-71,"qoq":-37,"yoy_adj":-71,"qoq_adj":-37,"adj":0},{"naics":"323","industry":"Printing and Related Support Activities","level":3,"pd":0.0273,"pd_adj":0.0283,"low":0.0079,"med":0.0164,"high":0.0341,"vol":0.0131,"yoy":-61,"qoq":-10,"yoy_adj":-51,"qoq_adj":0,"adj":10},{"naics":"3231","industry":"Printing and Related Support Activities","level":4,"pd":0.0273,"pd_adj":0.0283,"low":0.0079,"med":0.0164,"high":0.0341,"vol":0.0131,"yoy":-61,"qoq":-10,"yoy_adj":-51,"qoq_adj":0,"adj":10},{"naics":"324","industry":"Petroleum and Coal Products Manufacturing","level":3,"pd":0.0232,"pd_adj":0.0212,"low":0.0054,"med":0.0126,"high":0.029,"vol":0.0118,"yoy":-54,"qoq":-14,"yoy_adj":-74,"qoq_adj":-34,"adj":-20},{"naics":"3241","industry":"Petroleum and Coal Products Manufacturing","level":4,"pd":0.0232,"pd_adj":0.0212,"low":0.0054,"med":0.0126,"high":0.029,"vol":0.0118,"yoy":-54,"qoq":-14,"yoy_adj":-74,"qoq_adj":-34,"adj":-20},{"naics":"325","industry":"Chemical Manufacturing","level":3,"pd":0.0223,"pd_adj":0.0213,"low":0.0057,"med":0.0126,"high":0.0277,"vol":0.011,"yoy":-64,"qoq":-14,"yoy_adj":-74,"qoq_adj":-24,"adj":-10},{"naics":"3251","industry":"Basic Chemical Manufacturing","level":4,"pd":0.0218,"pd_adj":0.0208,"low":0.0057,"med":0.0125,"high":0.0274,"vol":0.01085,"yoy":-90,"qoq":-32,"yoy_adj":-100,"qoq_adj":-42,"adj":-10},{"naics":"3252","industry":"Resin, Synthetic Rubber, and Artificial Synthetic Fibers and Filaments Manufacturing","level":4,"pd":0.0214,"pd_adj":0.0214,"low":0.0052,"med":0.0118,"high":0.0267,"vol":0.01075,"yoy":-75,"qoq":2,"yoy_adj":-75,"qoq_adj":2,"adj":0},{"naics":"3253","industry":"Pesticide, Fertilizer, and Other Agricultural Chemical Manufacturing","level":4,"pd":0.0222,"pd_adj":0.0217,"low":0.0061,"med":0.013,"high":0.0276,"vol":0.01075,"yoy":-1,"qoq":36,"yoy_adj":-6,"qoq_adj":31,"adj":-5},{"naics":"3254","industry":"Pharmaceutical and Medicine Manufacturing","level":4,"pd":0.0275,"pd_adj":0.0275,"low":0.0066,"med":0.0151,"high":0.0344,"vol":0.0139,"yoy":-81,"qoq":-11,"yoy_adj":-81,"qoq_adj":-11,"adj":0},{"naics":"3255","industry":"Paint, Coating, and Adhesive Manufacturing","level":4,"pd":0.0183,"pd_adj":0.0183,"low":0.0052,"med":0.0109,"high":0.0229,"vol":0.00885,"yoy":-62,"qoq":-4,"yoy_adj":-62,"qoq_adj":-4,"adj":0},{"naics":"3256","industry":"Soap, Cleaning Compound, and Toilet Preparation Manufacturing","level":4,"pd":0.02,"pd_adj":0.02,"low":0.0058,"med":0.012,"high":0.0248,"vol":0.0095,"yoy":-92,"qoq":-38,"yoy_adj":-92,"qoq_adj":-38,"adj":0},{"naics":"3259","industry":"Other Chemical Product and Preparation Manufacturing","level":4,"pd":0.0233,"pd_adj":0.0233,"low":0.0048,"med":0.0118,"high":0.0289,"vol":0.01205,"yoy":-16,"qoq":-11,"yoy_adj":-16,"qoq_adj":-11,"adj":0},{"naics":"326","industry":"Plastics and Rubber Products Manufacturing","level":3,"pd":0.0158,"pd_adj":0.0158,"low":0.005,"med":0.0099,"high":0.0198,"vol":0.0074,"yoy":-37,"qoq":-1,"yoy_adj":-37,"qoq_adj":-1,"adj":0},{"naics":"3261","industry":"Plastics Product Manufacturing","level":4,"pd":0.0151,"pd_adj":0.0151,"low":0.0051,"med":0.0098,"high":0.0188,"vol":0.00685,"yoy":-37,"qoq":-5,"yoy_adj":-37,"qoq_adj":-5,"adj":0},{"naics":"3262","industry":"Rubber Product Manufacturing","level":4,"pd":0.0224,"pd_adj":0.0224,"low":0.0043,"med":0.0109,"high":0.028,"vol":0.01185,"yoy":-38,"qoq":36,"yoy_adj":-38,"qoq_adj":36,"adj":0},{"naics":"327","industry":"Nonmetallic Mineral Product Manufacturing","level":3,"pd":0.0225,"pd_adj":0.0225,"low":0.0048,"med":0.0115,"high":0.028,"vol":0.0116,"yoy":-16,"qoq":-9,"yoy_adj":-16,"qoq_adj":-9,"adj":0},{"naics":"3271","industry":"Clay Product and Refractory Manufacturing","level":4,"pd":0.0186,"pd_adj":0.0186,"low":0.0054,"med":0.0112,"high":0.0232,"vol":0.0089,"yoy":-63,"qoq":-11,"yoy_adj":-63,"qoq_adj":-11,"adj":0},{"naics":"3272","industry":"Glass and Glass Product Manufacturing","level":4,"pd":0.0266,"pd_adj":0.0266,"low":0.0042,"med":0.0118,"high":0.0332,"vol":0.0145,"yoy":2,"qoq":46,"yoy_adj":2,"qoq_adj":46,"adj":0},{"naics":"3273","industry":"Cement and Concrete Product Manufacturing","level":4,"pd":0.0228,"pd_adj":0.0238,"low":0.0047,"med":0.0115,"high":0.0283,"vol":0.0118,"yoy":-8,"qoq":-9,"yoy_adj":2,"qoq_adj":1,"adj":10},{"naics":"3274","industry":"Lime and Gypsum Product Manufacturing","level":4,"pd":0.0171,"pd_adj":0.0181,"low":0.0071,"med":0.0123,"high":0.0214,"vol":0.00715,"yoy":-57,"qoq":-28,"yoy_adj":-47,"qoq_adj":-18,"adj":10},{"naics":"3279","industry":"Other Nonmetallic Mineral Product Manufacturing","level":4,"pd":0.0207,"pd_adj":0.0217,"low":0.005,"med":0.0114,"high":0.0257,"vol":0.01035,"yoy":-45,"qoq":-36,"yoy_adj":-35,"qoq_adj":-26,"adj":10},{"naics":"331","industry":"Primary Metal Manufacturing","level":3,"pd":0.0175,"pd_adj":0.0185,"low":0.0053,"med":0.0107,"high":0.0218,"vol":0.00825,"yoy":-67,"qoq":-23,"yoy_adj":-57,"qoq_adj":-13,"adj":10},{"naics":"3311","industry":"Iron and Steel Mills and Ferroalloy Manufacturing","level":4,"pd":0.0167,"pd_adj":0.0177,"low":0.0054,"med":0.0106,"high":0.0208,"vol":0.0077,"yoy":-66,"qoq":-39,"yoy_adj":-56,"qoq_adj":-29,"adj":10},{"naics":"3312","industry":"Steel Product Manufacturing from Purchased Steel","level":4,"pd":0.0209,"pd_adj":0.0219,"low":0.0053,"med":0.0118,"high":0.0261,"vol":0.0104,"yoy":-44,"qoq":-28,"yoy_adj":-34,"qoq_adj":-18,"adj":10},{"naics":"3313","industry":"Alumina and Aluminum Production and Processing","level":4,"pd":0.0193,"pd_adj":0.0203,"low":0.0049,"med":0.0109,"high":0.024,"vol":0.00955,"yoy":-27,"qoq":-2,"yoy_adj":-17,"qoq_adj":8,"adj":10},{"naics":"3314","industry":"Nonferrous Metal (except Aluminum) Production and Processing","level":4,"pd":0.0151,"pd_adj":0.0161,"low":0.0061,"med":0.0107,"high":0.0189,"vol":0.0064,"yoy":-75,"qoq":-25,"yoy_adj":-65,"qoq_adj":-15,"adj":10},{"naics":"3315","industry":"Foundries","level":4,"pd":0.0161,"pd_adj":0.0171,"low":0.0049,"med":0.0099,"high":0.0201,"vol":0.0076,"yoy":-101,"qoq":-18,"yoy_adj":-91,"qoq_adj":-8,"adj":10},{"naics":"332","industry":"Fabricated Metal Product Manufacturing","level":3,"pd":0.0178,"pd_adj":0.0188,"low":0.0047,"med":0.0102,"high":0.0221,"vol":0.0087,"yoy":-43,"qoq":-13,"yoy_adj":-33,"qoq_adj":-3,"adj":10},{"naics":"3321","industry":"Forging and Stamping","level":4,"pd":0.0132,"pd_adj":0.0142,"low":0.0053,"med":0.0093,"high":0.0164,"vol":0.00555,"yoy":-45,"qoq":-5,"yoy_adj":-35,"qoq_adj":5,"adj":10},{"naics":"3322","industry":"Cutlery and Handtool Manufacturing","level":4,"pd":0.0157,"pd_adj":0.0157,"low":0.0055,"med":0.0104,"high":0.0195,"vol":0.007,"yoy":-39,"qoq":-17,"yoy_adj":-39,"qoq_adj":-17,"adj":0},{"naics":"3323","industry":"Architectural and Structural Metals Manufacturing","level":4,"pd":0.017,"pd_adj":0.017,"low":0.0048,"med":0.0101,"high":0.0211,"vol":0.00815,"yoy":-47,"qoq":-11,"yoy_adj":-47,"qoq_adj":-11,"adj":0},{"naics":"3324","industry":"Boiler, Tank, and Shipping Container Manufacturing","level":4,"pd":0.0206,"pd_adj":0.0221,"low":0.0052,"med":0.0115,"high":0.0256,"vol":0.0102,"yoy":-60,"qoq":-33,"yoy_adj":-45,"qoq_adj":-18,"adj":15},{"naics":"3325","industry":"Hardware Manufacturing","level":4,"pd":0.0251,"pd_adj":0.0261,"low":0.0048,"med":0.0123,"high":0.0312,"vol":0.0132,"yoy":4,"qoq":-77,"yoy_adj":14,"qoq_adj":-67,"adj":10},{"naics":"3326","industry":"Spring and Wire Product Manufacturing","level":4,"pd":0.0156,"pd_adj":0.0161,"low":0.005,"med":0.0098,"high":0.0194,"vol":0.0072,"yoy":-32,"qoq":-4,"yoy_adj":-27,"qoq_adj":1,"adj":5},{"naics":"3327","industry":"Machine Shops; Turned Product; and Screw, Nut, and Bolt Manufacturing","level":4,"pd":0.0172,"pd_adj":0.0177,"low":0.0045,"med":0.0098,"high":0.0215,"vol":0.0085,"yoy":-42,"qoq":-11,"yoy_adj":-37,"qoq_adj":-6,"adj":5},{"naics":"3328","industry":"Coating, Engraving, Heat Treating, and Allied Activities","level":4,"pd":0.0175,"pd_adj":0.0179,"low":0.0049,"med":0.0103,"high":0.0219,"vol":0.0085,"yoy":-53,"qoq":-19,"yoy_adj":-49,"qoq_adj":-15,"adj":4},{"naics":"3329","industry":"Other Fabricated Metal Product Manufacturing","level":4,"pd":0.0238,"pd_adj":0.0243,"low":0.0046,"med":0.0117,"high":0.0297,"vol":0.01255,"yoy":-31,"qoq":-16,"yoy_adj":-26,"qoq_adj":-11,"adj":5},{"naics":"333","industry":"Machinery Manufacturing","level":3,"pd":0.0183,"pd_adj":0.0188,"low":0.0048,"med":0.0104,"high":0.0228,"vol":0.009,"yoy":-47,"qoq":-26,"yoy_adj":-42,"qoq_adj":-21,"adj":5},{"naics":"3331","industry":"Agriculture, Construction, and Mining Machinery Manufacturing","level":4,"pd":0.0189,"pd_adj":0.0204,"low":0.0049,"med":0.0108,"high":0.0236,"vol":0.00935,"yoy":-40,"qoq":-21,"yoy_adj":-25,"qoq_adj":-6,"adj":15},{"naics":"3332","industry":"Industrial Machinery Manufacturing","level":4,"pd":0.0194,"pd_adj":0.0204,"low":0.0048,"med":0.0108,"high":0.0243,"vol":0.00975,"yoy":-70,"qoq":-20,"yoy_adj":-60,"qoq_adj":-10,"adj":10},{"naics":"3333","industry":"Commercial and Service Industry Machinery Manufacturing","level":4,"pd":0.022,"pd_adj":0.023,"low":0.0051,"med":0.0119,"high":0.0274,"vol":0.01115,"yoy":-50,"qoq":-21,"yoy_adj":-40,"qoq_adj":-11,"adj":10},{"naics":"3334","industry":"Ventilation, Heating, Air-Conditioning, and Commercial Refrigeration Equipment Manufacturing","level":4,"pd":0.0214,"pd_adj":0.0209,"low":0.0048,"med":0.0113,"high":0.0266,"vol":0.0109,"yoy":-37,"qoq":16,"yoy_adj":-42,"qoq_adj":11,"adj":-5},{"naics":"3335","industry":"Metalworking Machinery Manufacturing","level":4,"pd":0.0153,"pd_adj":0.0153,"low":0.0045,"med":0.0093,"high":0.019,"vol":0.00725,"yoy":-44,"qoq":-36,"yoy_adj":-44,"qoq_adj":-36,"adj":0},{"naics":"3336","industry":"Engine, Turbine, and Power Transmission Equipment Manufacturing","level":4,"pd":0.0154,"pd_adj":0.0154,"low":0.0058,"med":0.0106,"high":0.0192,"vol":0.0067,"yoy":-60,"qoq":-22,"yoy_adj":-60,"qoq_adj":-22,"adj":0},{"naics":"3339","industry":"Other General Purpose Machinery Manufacturing","level":4,"pd":0.0205,"pd_adj":0.0205,"low":0.0047,"med":0.011,"high":0.0256,"vol":0.01045,"yoy":-43,"qoq":-34,"yoy_adj":-43,"qoq_adj":-34,"adj":0},{"naics":"334","industry":"Computer and Electronic Product Manufacturing","level":3,"pd":0.0181,"pd_adj":0.0181,"low":0.0059,"med":0.0115,"high":0.0225,"vol":0.0083,"yoy":-86,"qoq":-25,"yoy_adj":-86,"qoq_adj":-25,"adj":0},{"naics":"3341","industry":"Computer and Peripheral Equipment Manufacturing","level":4,"pd":0.0199,"pd_adj":0.0199,"low":0.0057,"med":0.0119,"high":0.0247,"vol":0.0095,"yoy":-80,"qoq":-31,"yoy_adj":-80,"qoq_adj":-31,"adj":0},{"naics":"3342","industry":"Communications Equipment Manufacturing","level":4,"pd":0.0193,"pd_adj":0.0198,"low":0.0055,"med":0.0115,"high":0.0241,"vol":0.0093,"yoy":-88,"qoq":-28,"yoy_adj":-83,"qoq_adj":-23,"adj":5},{"naics":"3343","industry":"Audio and Video Equipment Manufacturing","level":4,"pd":0.0179,"pd_adj":0.0179,"low":0.0067,"med":0.0123,"high":0.0224,"vol":0.00785,"yoy":-85,"qoq":-57,"yoy_adj":-85,"qoq_adj":-57,"adj":0},{"naics":"3344","industry":"Semiconductor and Other Electronic Component Manufacturing","level":4,"pd":0.0179,"pd_adj":0.0179,"low":0.0058,"med":0.0114,"high":0.0224,"vol":0.0083,"yoy":-57,"qoq":-17,"yoy_adj":-57,"qoq_adj":-17,"adj":0},{"naics":"3345","industry":"Navigational, Measuring, Electromedical, and Control Instruments Manufacturing","level":4,"pd":0.0174,"pd_adj":0.0179,"low":0.0059,"med":0.0113,"high":0.0216,"vol":0.00785,"yoy":-112,"qoq":-30,"yoy_adj":-107,"qoq_adj":-25,"adj":5},{"naics":"3346","industry":"Manufacturing and Reproducing Magnetic and Optical Media","level":4,"pd":0.0223,"pd_adj":0.0223,"low":0.0068,"med":0.0138,"high":0.0278,"vol":0.0105,"yoy":-92,"qoq":-5,"yoy_adj":-92,"qoq_adj":-5,"adj":0},{"naics":"335","industry":"Electrical Equipment, Appliance, and Component Manufacturing","level":3,"pd":0.0211,"pd_adj":0.0211,"low":0.0049,"med":0.0114,"high":0.0263,"vol":0.0107,"yoy":-44,"qoq":-14,"yoy_adj":-44,"qoq_adj":-14,"adj":0},{"naics":"3351","industry":"Electric Lighting Equipment Manufacturing","level":4,"pd":0.0175,"pd_adj":0.0175,"low":0.0054,"med":0.0108,"high":0.0217,"vol":0.00815,"yoy":-53,"qoq":-34,"yoy_adj":-53,"qoq_adj":-34,"adj":0},{"naics":"3352","industry":"Household Appliance Manufacturing","level":4,"pd":0.0252,"pd_adj":0.0252,"low":0.0056,"med":0.0133,"high":0.0313,"vol":0.01285,"yoy":-79,"qoq":-38,"yoy_adj":-79,"qoq_adj":-38,"adj":0},{"naics":"3353","industry":"Electrical Equipment Manufacturing","level":4,"pd":0.0204,"pd_adj":0.0204,"low":0.0047,"med":0.011,"high":0.0254,"vol":0.01035,"yoy":-53,"qoq":-5,"yoy_adj":-53,"qoq_adj":-5,"adj":0},{"naics":"3359","industry":"Other Electrical Equipment and Component Manufacturing","level":4,"pd":0.0227,"pd_adj":0.0227,"low":0.0049,"med":0.0119,"high":0.0284,"vol":0.01175,"yoy":-28,"qoq":-11,"yoy_adj":-28,"qoq_adj":-11,"adj":0},{"naics":"336","industry":"Transportation Equipment Manufacturing","level":3,"pd":0.023,"pd_adj":0.025,"low":0.0058,"med":0.0129,"high":0.0287,"vol":0.01145,"yoy":-63,"qoq":-11,"yoy_adj":-43,"qoq_adj":9,"adj":20},{"naics":"3361","industry":"Motor Vehicle Manufacturing","level":4,"pd":0.0339,"pd_adj":0.0354,"low":0.0055,"med":0.0152,"high":0.0424,"vol":0.01845,"yoy":-35,"qoq":-16,"yoy_adj":-20,"qoq_adj":-1,"adj":15},{"naics":"3362","industry":"Motor Vehicle Body and Trailer Manufacturing","level":4,"pd":0.0298,"pd_adj":0.0308,"low":0.0073,"med":0.0165,"high":0.0374,"vol":0.01505,"yoy":-42,"qoq":-19,"yoy_adj":-32,"qoq_adj":-9,"adj":10},{"naics":"3363","industry":"Motor Vehicle Parts Manufacturing","level":4,"pd":0.0191,"pd_adj":0.0201,"low":0.0052,"med":0.0112,"high":0.0239,"vol":0.00935,"yoy":-69,"qoq":-21,"yoy_adj":-59,"qoq_adj":-11,"adj":10},{"naics":"3364","industry":"Aerospace Product and Parts Manufacturing","level":4,"pd":0.0229,"pd_adj":0.0209,"low":0.0056,"med":0.0127,"high":0.0286,"vol":0.0115,"yoy":-53,"qoq":-1,"yoy_adj":-73,"qoq_adj":-21,"adj":-20},{"naics":"3365","industry":"Railroad Rolling Stock Manufacturing","level":4,"pd":0.0185,"pd_adj":0.018,"low":0.0058,"med":0.0116,"high":0.0231,"vol":0.00865,"yoy":-46,"qoq":2,"yoy_adj":-51,"qoq_adj":-3,"adj":-5},{"naics":"3366","industry":"Ship and Boat Building","level":4,"pd":0.0249,"pd_adj":0.0244,"low":0.0055,"med":0.0131,"high":0.0313,"vol":0.0129,"yoy":-36,"qoq":28,"yoy_adj":-41,"qoq_adj":23,"adj":-5},{"naics":"3369","industry":"Other Transportation Equipment Manufacturing","level":4,"pd":0.0229,"pd_adj":0.0219,"low":0.0064,"med":0.0135,"high":0.0284,"vol":0.011,"yoy":-159,"qoq":-21,"yoy_adj":-169,"qoq_adj":-31,"adj":-10},{"naics":"337","industry":"Furniture and Related Product Manufacturing","level":3,"pd":0.0188,"pd_adj":0.0195,"low":0.0053,"med":0.0112,"high":0.0235,"vol":0.0091,"yoy":-52,"qoq":-28,"yoy_adj":-45,"qoq_adj":-21,"adj":7},{"naics":"3371","industry":"Household and Institutional Furniture and Kitchen Cabinet Manufacturing","level":4,"pd":0.0185,"pd_adj":0.0193,"low":0.0055,"med":0.0113,"high":0.0231,"vol":0.0088,"yoy":-51,"qoq":-30,"yoy_adj":-43,"qoq_adj":-22,"adj":8},{"naics":"3372","industry":"Office Furniture (including Fixtures) Manufacturing","level":4,"pd":0.0201,"pd_adj":0.0206,"low":0.0046,"med":0.0108,"high":0.0251,"vol":0.01025,"yoy":-49,"qoq":-28,"yoy_adj":-44,"qoq_adj":-23,"adj":5},{"naics":"3379","industry":"Other Furniture Related Product Manufacturing","level":4,"pd":0.0164,"pd_adj":0.0169,"low":0.0069,"med":0.0119,"high":0.0205,"vol":0.0068,"yoy":-95,"qoq":-20,"yoy_adj":-90,"qoq_adj":-15,"adj":5},{"naics":"339","industry":"Miscellaneous Manufacturing","level":3,"pd":0.0216,"pd_adj":0.0221,"low":0.0061,"med":0.0128,"high":0.027,"vol":0.01045,"yoy":-66,"qoq":-27,"yoy_adj":-61,"qoq_adj":-22,"adj":5},{"naics":"3391","industry":"Medical Equipment and Supplies Manufacturing","level":4,"pd":0.023,"pd_adj":0.023,"low":0.0069,"med":0.0141,"high":0.0288,"vol":0.01095,"yoy":-62,"qoq":-13,"yoy_adj":-62,"qoq_adj":-13,"adj":0},{"naics":"3399","industry":"Other Miscellaneous Manufacturing","level":4,"pd":0.0213,"pd_adj":0.0213,"low":0.0059,"med":0.0125,"high":0.0266,"vol":0.01035,"yoy":-67,"qoq":-30,"yoy_adj":-67,"qoq_adj":-30,"adj":0},{"naics":"42","industry":"Wholesale Trade","level":2,"pd":0.0208,"pd_adj":0.0213,"low":0.0062,"med":0.0126,"high":0.026,"vol":0.0099,"yoy":-52,"qoq":-10,"yoy_adj":-47,"qoq_adj":-5,"adj":5},{"naics":"423","industry":"Merchant Wholesalers, Durable Goods","level":3,"pd":0.0207,"pd_adj":0.0212,"low":0.0058,"med":0.0123,"high":0.026,"vol":0.0101,"yoy":-54,"qoq":-15,"yoy_adj":-49,"qoq_adj":-10,"adj":5},{"naics":"4231","industry":"Motor Vehicle and Motor Vehicle Parts and Supplies Merchant Wholesalers","level":4,"pd":0.0197,"pd_adj":0.0202,"low":0.0053,"med":0.0114,"high":0.0247,"vol":0.0097,"yoy":-71,"qoq":-23,"yoy_adj":-66,"qoq_adj":-18,"adj":5},{"naics":"4232","industry":"Furniture and Home Furnishing Merchant Wholesalers","level":4,"pd":0.0226,"pd_adj":0.0231,"low":0.0063,"med":0.0135,"high":0.0285,"vol":0.0111,"yoy":-54,"qoq":5,"yoy_adj":-49,"qoq_adj":10,"adj":5},{"naics":"4233","industry":"Lumber and Other Construction Materials Merchant Wholesalers","level":4,"pd":0.0204,"pd_adj":0.0209,"low":0.0053,"med":0.0116,"high":0.0256,"vol":0.01015,"yoy":-39,"qoq":-15,"yoy_adj":-34,"qoq_adj":-10,"adj":5},{"naics":"4234","industry":"Professional and Commercial Equipment and Supplies Merchant Wholesalers","level":4,"pd":0.0235,"pd_adj":0.024,"low":0.0068,"med":0.0142,"high":0.0296,"vol":0.0114,"yoy":-57,"qoq":-27,"yoy_adj":-52,"qoq_adj":-22,"adj":5},{"naics":"4235","industry":"Metal and Mineral (except Petroleum) Merchant Wholesalers","level":4,"pd":0.0169,"pd_adj":0.0174,"low":0.0053,"med":0.0106,"high":0.0212,"vol":0.00795,"yoy":-31,"qoq":-9,"yoy_adj":-26,"qoq_adj":-4,"adj":5},{"naics":"4236","industry":"Household Appliances and Electrical and Electronic Goods Merchant Wholesalers","level":4,"pd":0.0208,"pd_adj":0.0213,"low":0.0045,"med":0.0108,"high":0.0261,"vol":0.0108,"yoy":-21,"qoq":11,"yoy_adj":-16,"qoq_adj":16,"adj":5},{"naics":"4237","industry":"Hardware, and Plumbing and Heating Equipment and Supplies Merchant Wholesalers","level":4,"pd":0.0152,"pd_adj":0.0157,"low":0.0053,"med":0.01,"high":0.019,"vol":0.00685,"yoy":-40,"qoq":-17,"yoy_adj":-35,"qoq_adj":-12,"adj":5},{"naics":"4238","industry":"Machinery, Equipment, and Supplies Merchant Wholesalers","level":4,"pd":0.0179,"pd_adj":0.0184,"low":0.0052,"med":0.0108,"high":0.0225,"vol":0.00865,"yoy":-47,"qoq":-16,"yoy_adj":-42,"qoq_adj":-11,"adj":5},{"naics":"4239","industry":"Miscellaneous Durable Goods Merchant Wholesalers","level":4,"pd":0.0222,"pd_adj":0.0227,"low":0.0064,"med":0.0133,"high":0.0279,"vol":0.01075,"yoy":-64,"qoq":-17,"yoy_adj":-59,"qoq_adj":-12,"adj":5},{"naics":"424","industry":"Merchant Wholesalers, Nondurable Goods","level":3,"pd":0.0228,"pd_adj":0.0233,"low":0.0064,"med":0.0135,"high":0.0286,"vol":0.0111,"yoy":-33,"qoq":2,"yoy_adj":-28,"qoq_adj":7,"adj":5},{"naics":"4241","industry":"Paper and Paper Product Merchant Wholesalers","level":4,"pd":0.0219,"pd_adj":0.0224,"low":0.0057,"med":0.0125,"high":0.0274,"vol":0.01085,"yoy":-11,"qoq":4,"yoy_adj":-6,"qoq_adj":9,"adj":5},{"naics":"4242","industry":"Drugs and Druggists' Sundries Merchant Wholesalers","level":4,"pd":0.0266,"pd_adj":0.0271,"low":0.0069,"med":0.0152,"high":0.0335,"vol":0.0133,"yoy":-51,"qoq":7,"yoy_adj":-46,"qoq_adj":12,"adj":5},{"naics":"4243","industry":"Apparel, Piece Goods, and Notions Merchant Wholesalers","level":4,"pd":0.0243,"pd_adj":0.0248,"low":0.0069,"med":0.0146,"high":0.0305,"vol":0.0118,"yoy":-51,"qoq":-5,"yoy_adj":-46,"qoq_adj":0,"adj":5},{"naics":"4244","industry":"Grocery and Related Product Merchant Wholesalers","level":4,"pd":0.0247,"pd_adj":0.0252,"low":0.0067,"med":0.0145,"high":0.031,"vol":0.01215,"yoy":-26,"qoq":11,"yoy_adj":-21,"qoq_adj":16,"adj":5},{"naics":"4245","industry":"Farm Product Raw Material Merchant Wholesalers","level":4,"pd":0.0224,"pd_adj":0.0229,"low":0.0045,"med":0.0113,"high":0.0281,"vol":0.0118,"yoy":47,"qoq":35,"yoy_adj":52,"qoq_adj":40,"adj":5},{"naics":"4246","industry":"Chemical and Allied Products Merchant Wholesalers","level":4,"pd":0.0166,"pd_adj":0.0171,"low":0.0057,"med":0.0109,"high":0.0207,"vol":0.0075,"yoy":-66,"qoq":-19,"yoy_adj":-61,"qoq_adj":-14,"adj":5},{"naics":"4247","industry":"Petroleum and Petroleum Products Merchant Wholesalers","level":4,"pd":0.0172,"pd_adj":0.0167,"low":0.0065,"med":0.0119,"high":0.0215,"vol":0.0075,"yoy":-68,"qoq":-28,"yoy_adj":-73,"qoq_adj":-33,"adj":-5},{"naics":"4248","industry":"Beer, Wine, and Distilled Alcoholic Beverage Merchant Wholesalers","level":4,"pd":0.0215,"pd_adj":0.022,"low":0.0074,"med":0.0141,"high":0.0271,"vol":0.00985,"yoy":-99,"qoq":-31,"yoy_adj":-94,"qoq_adj":-26,"adj":5},{"naics":"4249","industry":"Miscellaneous Nondurable Goods Merchant Wholesalers","level":4,"pd":0.0221,"pd_adj":0.0226,"low":0.0063,"med":0.0132,"high":0.0277,"vol":0.0107,"yoy":-30,"qoq":2,"yoy_adj":-25,"qoq_adj":7,"adj":5},{"naics":"425","industry":"Wholesale Electronic Markets and Agents and Brokers","level":3,"pd":0.0193,"pd_adj":0.0198,"low":0.007,"med":0.0131,"high":0.0241,"vol":0.00855,"yoy":-90,"qoq":-20,"yoy_adj":-85,"qoq_adj":-15,"adj":5},{"naics":"4251","industry":"Wholesale Electronic Markets and Agents and Brokers","level":4,"pd":0.0193,"pd_adj":0.0198,"low":0.007,"med":0.0131,"high":0.0241,"vol":0.00855,"yoy":-90,"qoq":-20,"yoy_adj":-85,"qoq_adj":-15,"adj":5},{"naics":"44-45","industry":"Retail Trade","level":5,"pd":0.0234,"pd_adj":0.0239,"low":0.0082,"med":0.0155,"high":0.0294,"vol":0.0106,"yoy":-70,"qoq":-11,"yoy_adj":-65,"qoq_adj":-6,"adj":5},{"naics":"441","industry":"Motor Vehicle and Parts Dealers","level":3,"pd":0.0203,"pd_adj":0.021,"low":0.0054,"med":0.0117,"high":0.0252,"vol":0.0099,"yoy":-61,"qoq":-17,"yoy_adj":-54,"qoq_adj":-10,"adj":7},{"naics":"4411","industry":"Automobile Dealers","level":4,"pd":0.0202,"pd_adj":0.0209,"low":0.0052,"med":0.0114,"high":0.0251,"vol":0.00995,"yoy":-57,"qoq":-11,"yoy_adj":-50,"qoq_adj":-4,"adj":7},{"naics":"4412","industry":"Other Motor Vehicle Dealers","level":4,"pd":0.0218,"pd_adj":0.0225,"low":0.0064,"med":0.0132,"high":0.0271,"vol":0.01035,"yoy":-41,"qoq":-21,"yoy_adj":-34,"qoq_adj":-14,"adj":7},{"naics":"4413","industry":"Automotive Parts, Accessories, and Tire Stores","level":4,"pd":0.0198,"pd_adj":0.0208,"low":0.0053,"med":0.0114,"high":0.0246,"vol":0.00965,"yoy":-73,"qoq":-22,"yoy_adj":-63,"qoq_adj":-12,"adj":10},{"naics":"442","industry":"Furniture and Home Furnishings Stores","level":3,"pd":0.023,"pd_adj":0.024,"low":0.0065,"med":0.0137,"high":0.0287,"vol":0.0111,"yoy":-34,"qoq":-1,"yoy_adj":-24,"qoq_adj":9,"adj":10},{"naics":"4421","industry":"Furniture Stores","level":4,"pd":0.0256,"pd_adj":0.0266,"low":0.0073,"med":0.0153,"high":0.0319,"vol":0.0123,"yoy":-32,"qoq":0,"yoy_adj":-22,"qoq_adj":10,"adj":10},{"naics":"4422","industry":"Home Furnishings Stores","level":4,"pd":0.0205,"pd_adj":0.0215,"low":0.0057,"med":0.0121,"high":0.0256,"vol":0.00995,"yoy":-37,"qoq":-4,"yoy_adj":-27,"qoq_adj":6,"adj":10},{"naics":"443","industry":"Electronics and Appliance Stores","level":3,"pd":0.0248,"pd_adj":0.0253,"low":0.0068,"med":0.0146,"high":0.0309,"vol":0.01205,"yoy":-73,"qoq":-33,"yoy_adj":-68,"qoq_adj":-28,"adj":5},{"naics":"4431","industry":"Electronics and Appliance Stores","level":4,"pd":0.0248,"pd_adj":0.0253,"low":0.0068,"med":0.0146,"high":0.0309,"vol":0.01205,"yoy":-73,"qoq":-33,"yoy_adj":-68,"qoq_adj":-28,"adj":5},{"naics":"444","industry":"Building Material and Garden Equipment and Supplies Dealers","level":3,"pd":0.0221,"pd_adj":0.0221,"low":0.0059,"med":0.0127,"high":0.0275,"vol":0.0108,"yoy":-31,"qoq":0,"yoy_adj":-31,"qoq_adj":0,"adj":0},{"naics":"4441","industry":"Building Material and Supplies Dealers","level":4,"pd":0.0206,"pd_adj":0.0206,"low":0.006,"med":0.0124,"high":0.0256,"vol":0.0098,"yoy":-42,"qoq":-16,"yoy_adj":-42,"qoq_adj":-16,"adj":0},{"naics":"4442","industry":"Lawn and Garden Equipment and Supplies Stores","level":4,"pd":0.0255,"pd_adj":0.0255,"low":0.0057,"med":0.0135,"high":0.0319,"vol":0.0131,"yoy":-8,"qoq":35,"yoy_adj":-8,"qoq_adj":35,"adj":0},{"naics":"445","industry":"Food and Beverage Stores","level":3,"pd":0.0268,"pd_adj":0.0268,"low":0.0081,"med":0.0165,"high":0.0335,"vol":0.0127,"yoy":-43,"qoq":0,"yoy_adj":-43,"qoq_adj":0,"adj":0},{"naics":"4451","industry":"Grocery Stores","level":4,"pd":0.0266,"pd_adj":0.0271,"low":0.0085,"med":0.0168,"high":0.0333,"vol":0.0124,"yoy":-67,"qoq":-16,"yoy_adj":-62,"qoq_adj":-11,"adj":5},{"naics":"4452","industry":"Specialty Food Stores","level":4,"pd":0.0254,"pd_adj":0.0254,"low":0.0072,"med":0.0152,"high":0.0317,"vol":0.01225,"yoy":-33,"qoq":-1,"yoy_adj":-33,"qoq_adj":-1,"adj":0},{"naics":"4453","industry":"Beer, Wine, and Liquor Stores","level":4,"pd":0.0289,"pd_adj":0.0289,"low":0.0083,"med":0.0174,"high":0.0363,"vol":0.014,"yoy":-10,"qoq":31,"yoy_adj":-10,"qoq_adj":31,"adj":0},{"naics":"446","industry":"Health and Personal Care Stores","level":3,"pd":0.0227,"pd_adj":0.0227,"low":0.0081,"med":0.0151,"high":0.0283,"vol":0.0101,"yoy":-73,"qoq":-11,"yoy_adj":-73,"qoq_adj":-11,"adj":0},{"naics":"4461","industry":"Health and Personal Care Stores","level":4,"pd":0.0227,"pd_adj":0.0227,"low":0.0081,"med":0.0151,"high":0.0283,"vol":0.0101,"yoy":-73,"qoq":-11,"yoy_adj":-73,"qoq_adj":-11,"adj":0},{"naics":"447","industry":"Gasoline Stations","level":3,"pd":0.021,"pd_adj":0.0215,"low":0.0094,"med":0.0157,"high":0.0262,"vol":0.0084,"yoy":-63,"qoq":-2,"yoy_adj":-58,"qoq_adj":3,"adj":5},{"naics":"4471","industry":"Gasoline Stations","level":4,"pd":0.021,"pd_adj":0.0215,"low":0.0094,"med":0.0157,"high":0.0262,"vol":0.0084,"yoy":-63,"qoq":-2,"yoy_adj":-58,"qoq_adj":3,"adj":5},{"naics":"448","industry":"Clothing and Clothing Accessories Stores","level":3,"pd":0.0308,"pd_adj":0.0311,"low":0.0085,"med":0.0181,"high":0.0387,"vol":0.0151,"yoy":-97,"qoq":9,"yoy_adj":-94,"qoq_adj":12,"adj":3},{"naics":"4481","industry":"Clothing Stores","level":4,"pd":0.0334,"pd_adj":0.0337,"low":0.0085,"med":0.0189,"high":0.042,"vol":0.01675,"yoy":-104,"qoq":11,"yoy_adj":-101,"qoq_adj":14,"adj":3},{"naics":"4482","industry":"Shoe Stores","level":4,"pd":0.0235,"pd_adj":0.0238,"low":0.0086,"med":0.0159,"high":0.0292,"vol":0.0103,"yoy":-63,"qoq":-19,"yoy_adj":-60,"qoq_adj":-16,"adj":3},{"naics":"4483","industry":"Jewelry, Luggage, and Leather Goods Stores","level":4,"pd":0.0242,"pd_adj":0.0245,"low":0.0087,"med":0.0163,"high":0.0303,"vol":0.0108,"yoy":-106,"qoq":18,"yoy_adj":-103,"qoq_adj":21,"adj":3},{"naics":"451","industry":"Sporting Goods, Hobby, Musical Instrument, and Book Stores","level":3,"pd":0.0284,"pd_adj":0.0287,"low":0.0079,"med":0.0167,"high":0.0356,"vol":0.01385,"yoy":-15,"qoq":-7,"yoy_adj":-12,"qoq_adj":-4,"adj":3},{"naics":"4511","industry":"Sporting Goods, Hobby, and Musical Instrument Stores","level":4,"pd":0.0292,"pd_adj":0.0295,"low":0.0077,"med":0.0168,"high":0.0367,"vol":0.0145,"yoy":-10,"qoq":2,"yoy_adj":-7,"qoq_adj":5,"adj":3},{"naics":"4512","industry":"Book Stores and News Dealers","level":4,"pd":0.0228,"pd_adj":0.0228,"low":0.009,"med":0.0161,"high":0.0287,"vol":0.00985,"yoy":-45,"qoq":-70,"yoy_adj":-45,"qoq_adj":-70,"adj":0},{"naics":"452","industry":"General Merchandise Stores","level":3,"pd":0.032,"pd_adj":0.032,"low":0.0098,"med":0.0199,"high":0.0403,"vol":0.01525,"yoy":-39,"qoq":-55,"yoy_adj":-39,"qoq_adj":-55,"adj":0},{"naics":"4521","industry":"Department Stores","level":4,"pd":0.0221,"pd_adj":0.0221,"low":0.0095,"med":0.0163,"high":0.0278,"vol":0.00915,"yoy":-71,"qoq":-9,"yoy_adj":-71,"qoq_adj":-9,"adj":0},{"naics":"4529","industry":"Other General Merchandise Stores","level":4,"pd":0.0348,"pd_adj":0.0348,"low":0.0099,"med":0.0209,"high":0.0439,"vol":0.017,"yoy":-31,"qoq":-84,"yoy_adj":-31,"qoq_adj":-84,"adj":0},{"naics":"453","industry":"Miscellaneous Store Retailers","level":3,"pd":0.0261,"pd_adj":0.0261,"low":0.0082,"med":0.0164,"high":0.0329,"vol":0.01235,"yoy":-74,"qoq":-16,"yoy_adj":-74,"qoq_adj":-16,"adj":0},{"naics":"4531","industry":"Florists","level":4,"pd":0.0277,"pd_adj":0.0277,"low":0.0082,"med":0.0169,"high":0.0347,"vol":0.01325,"yoy":-92,"qoq":-9,"yoy_adj":-92,"qoq_adj":-9,"adj":0},{"naics":"4532","industry":"Office Supplies, Stationery, and Gift Stores","level":4,"pd":0.0237,"pd_adj":0.0237,"low":0.0074,"med":0.0149,"high":0.0298,"vol":0.0112,"yoy":-43,"qoq":-44,"yoy_adj":-43,"qoq_adj":-44,"adj":0},{"naics":"4533","industry":"Used Merchandise Stores","level":4,"pd":0.0234,"pd_adj":0.0234,"low":0.0087,"med":0.016,"high":0.0293,"vol":0.0103,"yoy":-73,"qoq":19,"yoy_adj":-73,"qoq_adj":19,"adj":0},{"naics":"4539","industry":"Other Miscellaneous Store Retailers","level":4,"pd":0.0282,"pd_adj":0.0282,"low":0.0082,"med":0.0171,"high":0.0355,"vol":0.01365,"yoy":-78,"qoq":-22,"yoy_adj":-78,"qoq_adj":-22,"adj":0},{"naics":"454","industry":"Nonstore Retailers","level":3,"pd":0.0224,"pd_adj":0.0224,"low":0.0089,"med":0.0158,"high":0.0281,"vol":0.0096,"yoy":-82,"qoq":-21,"yoy_adj":-82,"qoq_adj":-21,"adj":0},{"naics":"4541","industry":"Electronic Shopping and Mail-Order Houses","level":4,"pd":0.0307,"pd_adj":0.0307,"low":0.0079,"med":0.0174,"high":0.0387,"vol":0.0154,"yoy":-147,"qoq":-45,"yoy_adj":-147,"qoq_adj":-45,"adj":0},{"naics":"4542","industry":"Vending Machine Operators","level":4,"pd":0.0184,"pd_adj":0.0184,"low":0.0079,"med":0.0135,"high":0.023,"vol":0.00755,"yoy":-107,"qoq":-42,"yoy_adj":-107,"qoq_adj":-42,"adj":0},{"naics":"4543","industry":"Direct Selling Establishments","level":4,"pd":0.0213,"pd_adj":0.0213,"low":0.0091,"med":0.0156,"high":0.0267,"vol":0.0088,"yoy":-79,"qoq":-22,"yoy_adj":-79,"qoq_adj":-22,"adj":0},{"naics":"48-49","industry":"Transportation and Warehousing","level":5,"pd":0.0496,"pd_adj":0.0506,"low":0.0134,"med":0.029,"high":0.0622,"vol":0.0244,"yoy":-90,"qoq":-27,"yoy_adj":-80,"qoq_adj":-17,"adj":10},{"naics":"481","industry":"Air Transportation","level":3,"pd":0.0332,"pd_adj":0.0342,"low":0.0097,"med":0.0199,"high":0.0409,"vol":0.0156,"yoy":-61,"qoq":5,"yoy_adj":-51,"qoq_adj":15,"adj":10},{"naics":"4811","industry":"Scheduled Air Transportation","level":4,"pd":0.0367,"pd_adj":0.0377,"low":0.0096,"med":0.021,"high":0.0453,"vol":0.01785,"yoy":-23,"qoq":26,"yoy_adj":-13,"qoq_adj":36,"adj":10},{"naics":"4812","industry":"Nonscheduled Air Transportation","level":4,"pd":0.031,"pd_adj":0.032,"low":0.0097,"med":0.0193,"high":0.038,"vol":0.01415,"yoy":-85,"qoq":-8,"yoy_adj":-75,"qoq_adj":2,"adj":10},{"naics":"482","industry":"Rail Transportation","level":3,"pd":0.03,"pd_adj":0.029,"low":0.0095,"med":0.0188,"high":0.037,"vol":0.01375,"yoy":-28,"qoq":16,"yoy_adj":-38,"qoq_adj":6,"adj":-10},{"naics":"4821","industry":"Rail Transportation","level":4,"pd":0.03,"pd_adj":0.029,"low":0.0095,"med":0.0188,"high":0.037,"vol":0.01375,"yoy":-28,"qoq":16,"yoy_adj":-38,"qoq_adj":6,"adj":-10},{"naics":"483","industry":"Water Transportation","level":3,"pd":0.0369,"pd_adj":0.0359,"low":0.0097,"med":0.021,"high":0.0453,"vol":0.0178,"yoy":-55,"qoq":-2,"yoy_adj":-65,"qoq_adj":-12,"adj":-10},{"naics":"4831","industry":"Deep Sea, Coastal, and Great Lakes Water Transportation","level":4,"pd":0.038,"pd_adj":0.038,"low":0.01,"med":0.0217,"high":0.0469,"vol":0.01845,"yoy":-47,"qoq":5,"yoy_adj":-47,"qoq_adj":5,"adj":0},{"naics":"4832","industry":"Inland Water Transportation","level":4,"pd":0.0347,"pd_adj":0.0342,"low":0.0091,"med":0.0198,"high":0.0422,"vol":0.01655,"yoy":-65,"qoq":-13,"yoy_adj":-70,"qoq_adj":-18,"adj":-5},{"naics":"484","industry":"Truck Transportation","level":3,"pd":0.065,"pd_adj":0.067,"low":0.0178,"med":0.0385,"high":0.0825,"vol":0.03235,"yoy":-68,"qoq":-17,"yoy_adj":-48,"qoq_adj":3,"adj":20},{"naics":"4841","industry":"General Freight Trucking","level":4,"pd":0.0652,"pd_adj":0.0672,"low":0.0179,"med":0.0387,"high":0.0828,"vol":0.03245,"yoy":-72,"qoq":-17,"yoy_adj":-52,"qoq_adj":3,"adj":20},{"naics":"4842","industry":"Specialized Freight Trucking","level":4,"pd":0.0632,"pd_adj":0.0647,"low":0.0168,"med":0.037,"high":0.0801,"vol":0.03165,"yoy":-35,"qoq":-20,"yoy_adj":-20,"qoq_adj":-5,"adj":15},{"naics":"485","industry":"Transit and Ground Passenger Transportation","level":3,"pd":0.0383,"pd_adj":0.0393,"low":0.0098,"med":0.0216,"high":0.0472,"vol":0.0187,"yoy":-121,"qoq":-35,"yoy_adj":-111,"qoq_adj":-25,"adj":10},{"naics":"4851","industry":"Urban Transit Systems","level":4,"pd":0.0711,"pd_adj":0.0711,"low":0.0183,"med":0.0409,"high":0.0901,"vol":0.0359,"yoy":-52,"qoq":-4,"yoy_adj":-52,"qoq_adj":-4,"adj":0},{"naics":"4852","industry":"Interurban and Rural Bus Transportation","level":4,"pd":0.0399,"pd_adj":0.0399,"low":0.0127,"med":0.0252,"high":0.0491,"vol":0.0182,"yoy":-105,"qoq":-18,"yoy_adj":-105,"qoq_adj":-18,"adj":0},{"naics":"4853","industry":"Taxi and Limousine Service","level":4,"pd":0.0377,"pd_adj":0.0387,"low":0.0093,"med":0.0209,"high":0.0465,"vol":0.0186,"yoy":-130,"qoq":-37,"yoy_adj":-120,"qoq_adj":-27,"adj":10},{"naics":"4854","industry":"School and Employee Bus Transportation","level":4,"pd":0.029,"pd_adj":0.0295,"low":0.0108,"med":0.0198,"high":0.0358,"vol":0.0125,"yoy":-52,"qoq":-60,"yoy_adj":-47,"qoq_adj":-55,"adj":5},{"naics":"4855","industry":"Charter Bus Industry","level":4,"pd":0.0295,"pd_adj":0.0305,"low":0.0106,"med":0.0196,"high":0.036,"vol":0.0127,"yoy":-39,"qoq":-21,"yoy_adj":-29,"qoq_adj":-11,"adj":10},{"naics":"4859","industry":"Other Transit and Ground Passenger Transportation","level":4,"pd":0.0436,"pd_adj":0.0436,"low":0.0121,"med":0.0256,"high":0.0539,"vol":0.0209,"yoy":-95,"qoq":-25,"yoy_adj":-95,"qoq_adj":-25,"adj":0},{"naics":"486","industry":"Pipeline Transportation","level":3,"pd":0.0325,"pd_adj":0.0325,"low":0.01,"med":0.02,"high":0.0399,"vol":0.01495,"yoy":-90,"qoq":-30,"yoy_adj":-90,"qoq_adj":-30,"adj":0},{"naics":"4861","industry":"Pipeline Transportation of Crude Oil","level":4,"pd":0.0353,"pd_adj":0.0353,"low":0.0099,"med":0.0208,"high":0.0433,"vol":0.0167,"yoy":-55,"qoq":-25,"yoy_adj":-55,"qoq_adj":-25,"adj":0},{"naics":"4862","industry":"Pipeline Transportation of Natural Gas","level":4,"pd":0.0339,"pd_adj":0.0339,"low":0.0101,"med":0.0206,"high":0.0414,"vol":0.01565,"yoy":-87,"qoq":-35,"yoy_adj":-87,"qoq_adj":-35,"adj":0},{"naics":"4869","industry":"Other Pipeline Transportation","level":4,"pd":0.0282,"pd_adj":0.0282,"low":0.0099,"med":0.0187,"high":0.0349,"vol":0.0125,"yoy":-124,"qoq":-21,"yoy_adj":-124,"qoq_adj":-21,"adj":0},{"naics":"487","industry":"Scenic and Sightseeing Transportation","level":3,"pd":0.034,"pd_adj":0.0345,"low":0.0103,"med":0.0208,"high":0.0416,"vol":0.01565,"yoy":-60,"qoq":2,"yoy_adj":-55,"qoq_adj":7,"adj":5},{"naics":"4871","industry":"Scenic and Sightseeing Transportation, Land","level":4,"pd":0.0376,"pd_adj":0.0381,"low":0.0111,"med":0.0228,"high":0.0463,"vol":0.0176,"yoy":-62,"qoq":13,"yoy_adj":-57,"qoq_adj":18,"adj":5},{"naics":"4872","industry":"Scenic and Sightseeing Transportation, Water","level":4,"pd":0.0328,"pd_adj":0.0333,"low":0.0098,"med":0.0199,"high":0.04,"vol":0.0151,"yoy":-64,"qoq":-1,"yoy_adj":-59,"qoq_adj":4,"adj":5},{"naics":"4879","industry":"Scenic and Sightseeing Transportation, Other","level":4,"pd":0.0276,"pd_adj":0.0281,"low":0.0098,"med":0.0183,"high":0.0338,"vol":0.012,"yoy":-51,"qoq":-30,"yoy_adj":-46,"qoq_adj":-25,"adj":5},{"naics":"488","industry":"Support Activities for Transportation","level":3,"pd":0.0437,"pd_adj":0.0442,"low":0.0112,"med":0.0248,"high":0.0543,"vol":0.02155,"yoy":-71,"qoq":-27,"yoy_adj":-66,"qoq_adj":-22,"adj":5},{"naics":"4881","industry":"Support Activities for Air Transportation","level":4,"pd":0.0249,"pd_adj":0.0259,"low":0.0102,"med":0.0177,"high":0.0303,"vol":0.01005,"yoy":-124,"qoq":-20,"yoy_adj":-114,"qoq_adj":-10,"adj":10},{"naics":"4882","industry":"Support Activities for Rail Transportation","level":4,"pd":0.0553,"pd_adj":0.0553,"low":0.0145,"med":0.032,"high":0.0694,"vol":0.02745,"yoy":-65,"qoq":-46,"yoy_adj":-65,"qoq_adj":-46,"adj":0},{"naics":"4883","industry":"Support Activities for Water Transportation","level":4,"pd":0.0303,"pd_adj":0.0303,"low":0.0099,"med":0.0192,"high":0.0369,"vol":0.0135,"yoy":-35,"qoq":5,"yoy_adj":-35,"qoq_adj":5,"adj":0},{"naics":"4884","industry":"Support Activities for Road Transportation","level":4,"pd":0.0309,"pd_adj":0.0309,"low":0.0076,"med":0.017,"high":0.0377,"vol":0.01505,"yoy":-85,"qoq":-43,"yoy_adj":-85,"qoq_adj":-43,"adj":0},{"naics":"4885","industry":"Freight Transportation Arrangement","level":4,"pd":0.0608,"pd_adj":0.0608,"low":0.0148,"med":0.034,"high":0.0763,"vol":0.03075,"yoy":-63,"qoq":-23,"yoy_adj":-63,"qoq_adj":-23,"adj":0},{"naics":"4889","industry":"Other Support Activities for Transportation","level":4,"pd":0.0549,"pd_adj":0.0559,"low":0.0155,"med":0.0329,"high":0.069,"vol":0.02675,"yoy":-67,"qoq":-37,"yoy_adj":-57,"qoq_adj":-27,"adj":10},{"naics":"491","industry":"Postal Service","level":3,"pd":0.0265,"pd_adj":0.027,"low":0.0099,"med":0.0181,"high":0.0329,"vol":0.0115,"yoy":-73,"qoq":-4,"yoy_adj":-68,"qoq_adj":1,"adj":5},{"naics":"4911","industry":"Postal Service","level":4,"pd":0.0265,"pd_adj":0.027,"low":0.0099,"med":0.0181,"high":0.0329,"vol":0.0115,"yoy":-73,"qoq":-4,"yoy_adj":-68,"qoq_adj":1,"adj":5},{"naics":"492","industry":"Couriers and Messengers","level":3,"pd":0.0483,"pd_adj":0.0493,"low":0.0148,"med":0.0302,"high":0.0611,"vol":0.02315,"yoy":-28,"qoq":-43,"yoy_adj":-18,"qoq_adj":-33,"adj":10},{"naics":"4921","industry":"Couriers and Express Delivery Services","level":4,"pd":0.0474,"pd_adj":0.0479,"low":0.015,"med":0.0302,"high":0.06,"vol":0.0225,"yoy":-34,"qoq":-43,"yoy_adj":-29,"qoq_adj":-38,"adj":5},{"naics":"4922","industry":"Local Messengers and Local Delivery","level":4,"pd":0.0513,"pd_adj":0.0523,"low":0.0141,"med":0.0305,"high":0.0652,"vol":0.02555,"yoy":-9,"qoq":-46,"yoy_adj":1,"qoq_adj":-36,"adj":10},{"naics":"493","industry":"Warehousing and Storage","level":3,"pd":0.0338,"pd_adj":0.0338,"low":0.0129,"med":0.0235,"high":0.0425,"vol":0.0148,"yoy":-95,"qoq":-31,"yoy_adj":-95,"qoq_adj":-31,"adj":0},{"naics":"4931","industry":"Warehousing and Storage","level":4,"pd":0.0338,"pd_adj":0.0338,"low":0.0129,"med":0.0235,"high":0.0425,"vol":0.0148,"yoy":-95,"qoq":-31,"yoy_adj":-95,"qoq_adj":-31,"adj":0},{"naics":"51","industry":"Information","level":2,"pd":0.0235,"pd_adj":0.0235,"low":0.0067,"med":0.014,"high":0.0292,"vol":0.01125,"yoy":-78,"qoq":-23,"yoy_adj":-78,"qoq_adj":-23,"adj":0},{"naics":"511","industry":"Publishing Industries (except Internet)","level":3,"pd":0.0257,"pd_adj":0.0262,"low":0.0069,"med":0.0149,"high":0.0321,"vol":0.0126,"yoy":-22,"qoq":17,"yoy_adj":-17,"qoq_adj":22,"adj":5},{"naics":"5111","industry":"Newspaper, Periodical, Book, and Directory Publishers","level":4,"pd":0.0271,"pd_adj":0.0276,"low":0.0082,"med":0.0166,"high":0.034,"vol":0.0129,"yoy":-30,"qoq":2,"yoy_adj":-25,"qoq_adj":7,"adj":5},{"naics":"5112","industry":"Software Publishers","level":4,"pd":0.0246,"pd_adj":0.0261,"low":0.006,"med":0.0136,"high":0.0308,"vol":0.0124,"yoy":-14,"qoq":28,"yoy_adj":1,"qoq_adj":43,"adj":15},{"naics":"512","industry":"Motion Picture and Sound Recording Industries","level":3,"pd":0.0261,"pd_adj":0.0261,"low":0.0059,"med":0.0138,"high":0.0322,"vol":0.01315,"yoy":-76,"qoq":-15,"yoy_adj":-76,"qoq_adj":-15,"adj":0},{"naics":"5121","industry":"Motion Picture and Video Industries","level":4,"pd":0.026,"pd_adj":0.026,"low":0.0057,"med":0.0136,"high":0.0321,"vol":0.0132,"yoy":-76,"qoq":-16,"yoy_adj":-76,"qoq_adj":-16,"adj":0},{"naics":"5122","industry":"Sound Recording Industries","level":4,"pd":0.0266,"pd_adj":0.0266,"low":0.0069,"med":0.0151,"high":0.0329,"vol":0.013,"yoy":-78,"qoq":-10,"yoy_adj":-78,"qoq_adj":-10,"adj":0},{"naics":"515","industry":"Broadcasting (except Internet)","level":3,"pd":0.0253,"pd_adj":0.0253,"low":0.0084,"med":0.0163,"high":0.0317,"vol":0.01165,"yoy":-9,"qoq":-8,"yoy_adj":-9,"qoq_adj":-8,"adj":0},{"naics":"5151","industry":"Radio and Television Broadcasting","level":4,"pd":0.0245,"pd_adj":0.0245,"low":0.0077,"med":0.0154,"high":0.0306,"vol":0.01145,"yoy":-7,"qoq":-2,"yoy_adj":-7,"qoq_adj":-2,"adj":0},{"naics":"5152","industry":"Cable and Other Subscription Programming","level":4,"pd":0.0281,"pd_adj":0.0281,"low":0.0104,"med":0.0191,"high":0.0352,"vol":0.0124,"yoy":-36,"qoq":-31,"yoy_adj":-36,"qoq_adj":-31,"adj":0},{"naics":"517","industry":"Telecommunications","level":3,"pd":0.0233,"pd_adj":0.0233,"low":0.0076,"med":0.0149,"high":0.0291,"vol":0.01075,"yoy":-88,"qoq":-51,"yoy_adj":-88,"qoq_adj":-51,"adj":0},{"naics":"5171","industry":"Wired Telecommunications Carriers","level":4,"pd":0.0236,"pd_adj":0.0236,"low":0.0079,"med":0.0152,"high":0.0295,"vol":0.0108,"yoy":-83,"qoq":-64,"yoy_adj":-83,"qoq_adj":-64,"adj":0},{"naics":"5172","industry":"Wireless Telecommunications Carriers (except Satellite)","level":4,"pd":0.0228,"pd_adj":0.0228,"low":0.0074,"med":0.0145,"high":0.0285,"vol":0.01055,"yoy":-57,"qoq":-13,"yoy_adj":-57,"qoq_adj":-13,"adj":0},{"naics":"5174","industry":"Satellite Telecommunications","level":4,"pd":0.022,"pd_adj":0.022,"low":0.0081,"med":0.0149,"high":0.0274,"vol":0.00965,"yoy":-104,"qoq":-66,"yoy_adj":-104,"qoq_adj":-66,"adj":0},{"naics":"5179","industry":"Other Telecommunications","level":4,"pd":0.0228,"pd_adj":0.0228,"low":0.0072,"med":0.0143,"high":0.0284,"vol":0.0106,"yoy":-166,"qoq":-66,"yoy_adj":-166,"qoq_adj":-66,"adj":0},{"naics":"518","industry":"Data Processing, Hosting, and Related Services","level":3,"pd":0.0213,"pd_adj":0.0213,"low":0.0065,"med":0.0131,"high":0.0266,"vol":0.01005,"yoy":-98,"qoq":-28,"yoy_adj":-98,"qoq_adj":-28,"adj":0},{"naics":"5182","industry":"Data Processing, Hosting, and Related Services","level":4,"pd":0.0213,"pd_adj":0.0213,"low":0.0065,"med":0.0131,"high":0.0266,"vol":0.01005,"yoy":-98,"qoq":-28,"yoy_adj":-98,"qoq_adj":-28,"adj":0},{"naics":"519","industry":"Other Information Services","level":3,"pd":0.02,"pd_adj":0.02,"low":0.0074,"med":0.0136,"high":0.0249,"vol":0.00875,"yoy":-71,"qoq":-11,"yoy_adj":-71,"qoq_adj":-11,"adj":0},{"naics":"5191","industry":"Other Information Services","level":4,"pd":0.02,"pd_adj":0.02,"low":0.0074,"med":0.0136,"high":0.0249,"vol":0.00875,"yoy":-71,"qoq":-11,"yoy_adj":-71,"qoq_adj":-11,"adj":0},{"naics":"52","industry":"Finance and Insurance","level":2,"pd":0.017,"pd_adj":0.017,"low":0.0054,"med":0.0108,"high":0.0214,"vol":0.008,"yoy":-56,"qoq":-13,"yoy_adj":-56,"qoq_adj":-13,"adj":0},{"naics":"521","industry":"Monetary Authorities-Central Bank","level":3,"pd":0.0149,"pd_adj":0.0149,"low":0.0064,"med":0.0109,"high":0.0188,"vol":0.0062,"yoy":-52,"qoq":-53,"yoy_adj":-52,"qoq_adj":-53,"adj":0},{"naics":"5211","industry":"Monetary Authorities-Central Bank","level":4,"pd":0.0149,"pd_adj":0.0149,"low":0.0064,"med":0.0109,"high":0.0188,"vol":0.0062,"yoy":-52,"qoq":-53,"yoy_adj":-52,"qoq_adj":-53,"adj":0},{"naics":"522","industry":"Credit Intermediation and Related Activities","level":3,"pd":0.0172,"pd_adj":0.0172,"low":0.006,"med":0.0114,"high":0.0216,"vol":0.0078,"yoy":-51,"qoq":-21,"yoy_adj":-51,"qoq_adj":-21,"adj":0},{"naics":"5221","industry":"Depository Credit Intermediation","level":4,"pd":0.0156,"pd_adj":0.0156,"low":0.006,"med":0.0108,"high":0.0197,"vol":0.00685,"yoy":-40,"qoq":-19,"yoy_adj":-40,"qoq_adj":-19,"adj":0},{"naics":"5222","industry":"Nondepository Credit Intermediation","level":4,"pd":0.0187,"pd_adj":0.0187,"low":0.0061,"med":0.012,"high":0.0235,"vol":0.0087,"yoy":-56,"qoq":-20,"yoy_adj":-56,"qoq_adj":-20,"adj":0},{"naics":"5223","industry":"Activities Related to Credit Intermediation","level":4,"pd":0.0185,"pd_adj":0.0185,"low":0.0059,"med":0.0117,"high":0.0232,"vol":0.00865,"yoy":-80,"qoq":-28,"yoy_adj":-80,"qoq_adj":-28,"adj":0},{"naics":"523","industry":"Securities, Commodity Contracts, and Other Financial Investments and Related Activities","level":3,"pd":0.0188,"pd_adj":0.0188,"low":0.0054,"med":0.0113,"high":0.0236,"vol":0.0091,"yoy":-66,"qoq":-13,"yoy_adj":-66,"qoq_adj":-13,"adj":0},{"naics":"5231","industry":"Securities and Commodity Contracts Intermediation and Brokerage","level":4,"pd":0.0191,"pd_adj":0.0191,"low":0.0053,"med":0.0113,"high":0.024,"vol":0.00935,"yoy":-69,"qoq":2,"yoy_adj":-69,"qoq_adj":2,"adj":0},{"naics":"5232","industry":"Securities and Commodity Exchanges","level":4,"pd":0.0139,"pd_adj":0.0139,"low":0.0063,"med":0.0105,"high":0.0175,"vol":0.0056,"yoy":-47,"qoq":-25,"yoy_adj":-47,"qoq_adj":-25,"adj":0},{"naics":"5239","industry":"Other Financial Investment Activities","level":4,"pd":0.0187,"pd_adj":0.0187,"low":0.0054,"med":0.0113,"high":0.0236,"vol":0.0091,"yoy":-66,"qoq":-15,"yoy_adj":-66,"qoq_adj":-15,"adj":0},{"naics":"524","industry":"Insurance Carriers and Related Activities","level":3,"pd":0.0162,"pd_adj":0.0162,"low":0.0054,"med":0.0105,"high":0.0204,"vol":0.0075,"yoy":-42,"qoq":-8,"yoy_adj":-42,"qoq_adj":-8,"adj":0},{"naics":"5241","industry":"Insurance Carriers","level":4,"pd":0.0179,"pd_adj":0.0179,"low":0.0059,"med":0.0115,"high":0.0226,"vol":0.00835,"yoy":-42,"qoq":-7,"yoy_adj":-42,"qoq_adj":-7,"adj":0},{"naics":"5242","industry":"Agencies, Brokerages, and Other Insurance Related Activities","level":4,"pd":0.016,"pd_adj":0.016,"low":0.0053,"med":0.0103,"high":0.0201,"vol":0.0074,"yoy":-42,"qoq":-8,"yoy_adj":-42,"qoq_adj":-8,"adj":0},{"naics":"525","industry":"Funds, Trusts, and Other Financial Vehicles","level":3,"pd":0.0156,"pd_adj":0.0156,"low":0.0067,"med":0.0115,"high":0.0196,"vol":0.00645,"yoy":-56,"qoq":-17,"yoy_adj":-56,"qoq_adj":-17,"adj":0},{"naics":"5259","industry":"Other Investment Pools and Funds","level":4,"pd":0.0156,"pd_adj":0.0156,"low":0.0067,"med":0.0115,"high":0.0196,"vol":0.00645,"yoy":-56,"qoq":-17,"yoy_adj":-56,"qoq_adj":-17,"adj":0},{"naics":"53","industry":"Real Estate and Rental and Leasing","level":2,"pd":0.0248,"pd_adj":0.0248,"low":0.0066,"med":0.0142,"high":0.0309,"vol":0.01215,"yoy":-60,"qoq":-5,"yoy_adj":-60,"qoq_adj":-5,"adj":0},{"naics":"531","industry":"Real Estate","level":3,"pd":0.0238,"pd_adj":0.0238,"low":0.0065,"med":0.0138,"high":0.0297,"vol":0.0116,"yoy":-56,"qoq":-8,"yoy_adj":-56,"qoq_adj":-8,"adj":0},{"naics":"5311","industry":"Lessors of Real Estate","level":4,"pd":0.026,"pd_adj":0.026,"low":0.0066,"med":0.0146,"high":0.0324,"vol":0.0129,"yoy":-47,"qoq":1,"yoy_adj":-47,"qoq_adj":1,"adj":0},{"naics":"5312","industry":"Offices of Real Estate Agents and Brokers","level":4,"pd":0.021,"pd_adj":0.021,"low":0.0054,"med":0.0119,"high":0.0262,"vol":0.0104,"yoy":-60,"qoq":-10,"yoy_adj":-60,"qoq_adj":-10,"adj":0},{"naics":"5313","industry":"Activities Related to Real Estate","level":4,"pd":0.0209,"pd_adj":0.0209,"low":0.0066,"med":0.0132,"high":0.0261,"vol":0.00975,"yoy":-64,"qoq":-21,"yoy_adj":-64,"qoq_adj":-21,"adj":0},{"naics":"532","industry":"Rental and Leasing Services","level":3,"pd":0.028,"pd_adj":0.028,"low":0.0066,"med":0.0152,"high":0.0349,"vol":0.01415,"yoy":-88,"qoq":-28,"yoy_adj":-88,"qoq_adj":-28,"adj":0},{"naics":"5321","industry":"Automotive Equipment Rental and Leasing","level":4,"pd":0.04,"pd_adj":0.04,"low":0.0094,"med":0.0218,"high":0.0502,"vol":0.0204,"yoy":-182,"qoq":-32,"yoy_adj":-182,"qoq_adj":-32,"adj":0},{"naics":"5322","industry":"Consumer Goods Rental","level":4,"pd":0.0241,"pd_adj":0.0241,"low":0.0067,"med":0.0142,"high":0.03,"vol":0.01165,"yoy":-104,"qoq":-28,"yoy_adj":-104,"qoq_adj":-28,"adj":0},{"naics":"5323","industry":"General Rental Centers","level":4,"pd":0.0256,"pd_adj":0.0256,"low":0.0054,"med":0.0132,"high":0.0319,"vol":0.01325,"yoy":-54,"qoq":1,"yoy_adj":-54,"qoq_adj":1,"adj":0},{"naics":"5324","industry":"Commercial and Industrial Machinery and Equipment Rental and Leasing","level":4,"pd":0.0252,"pd_adj":0.0252,"low":0.0056,"med":0.0133,"high":0.0314,"vol":0.0129,"yoy":-63,"qoq":-28,"yoy_adj":-63,"qoq_adj":-28,"adj":0},{"naics":"533","industry":"Lessors of Nonfinancial Intangible Assets (except Copyrighted Works)","level":3,"pd":0.02,"pd_adj":0.02,"low":0.0069,"med":0.0131,"high":0.025,"vol":0.00905,"yoy":-38,"qoq":-13,"yoy_adj":-38,"qoq_adj":-13,"adj":0},{"naics":"5331","industry":"Lessors of Nonfinancial Intangible Assets (except Copyrighted Works)","level":4,"pd":0.02,"pd_adj":0.02,"low":0.0069,"med":0.0131,"high":0.025,"vol":0.00905,"yoy":-38,"qoq":-13,"yoy_adj":-38,"qoq_adj":-13,"adj":0},{"naics":"54","industry":"Professional, Scientific, and Technical Services","level":2,"pd":0.0209,"pd_adj":0.0209,"low":0.0057,"med":0.0123,"high":0.0262,"vol":0.01025,"yoy":-64,"qoq":-28,"yoy_adj":-64,"qoq_adj":-28,"adj":0},{"naics":"541","industry":"Professional, Scientific, and Technical Services","level":3,"pd":0.0211,"pd_adj":0.0211,"low":0.0058,"med":0.0124,"high":0.0265,"vol":0.01035,"yoy":-64,"qoq":-28,"yoy_adj":-64,"qoq_adj":-28,"adj":0},{"naics":"5411","industry":"Legal Services","level":4,"pd":0.0166,"pd_adj":0.0166,"low":0.0052,"med":0.0104,"high":0.0207,"vol":0.00775,"yoy":-56,"qoq":-17,"yoy_adj":-56,"qoq_adj":-17,"adj":0},{"naics":"5412","industry":"Accounting, Tax Preparation, Bookkeeping, and Payroll Services","level":4,"pd":0.0175,"pd_adj":0.0175,"low":0.0053,"med":0.0108,"high":0.022,"vol":0.00835,"yoy":-55,"qoq":-10,"yoy_adj":-55,"qoq_adj":-10,"adj":0},{"naics":"5413","industry":"Architectural, Engineering, and Related Services","level":4,"pd":0.0174,"pd_adj":0.0174,"low":0.0045,"med":0.0099,"high":0.0218,"vol":0.00865,"yoy":-52,"qoq":-17,"yoy_adj":-52,"qoq_adj":-17,"adj":0},{"naics":"5414","industry":"Specialized Design Services","level":4,"pd":0.0232,"pd_adj":0.0232,"low":0.0058,"med":0.0129,"high":0.0289,"vol":0.01155,"yoy":-95,"qoq":-30,"yoy_adj":-95,"qoq_adj":-30,"adj":0},{"naics":"5415","industry":"Computer Systems Design and Related Services","level":4,"pd":0.0218,"pd_adj":0.0218,"low":0.0053,"med":0.012,"high":0.0274,"vol":0.01105,"yoy":-66,"qoq":-20,"yoy_adj":-66,"qoq_adj":-20,"adj":0},{"naics":"5416","industry":"Management, Scientific, and Technical Consulting Services","level":4,"pd":0.0235,"pd_adj":0.0235,"low":0.0052,"med":0.0124,"high":0.0295,"vol":0.01215,"yoy":-74,"qoq":-27,"yoy_adj":-74,"qoq_adj":-27,"adj":0},{"naics":"5417","industry":"Scientific Research and Development Services","level":4,"pd":0.0213,"pd_adj":0.0193,"low":0.0053,"med":0.0119,"high":0.0267,"vol":0.0107,"yoy":-43,"qoq":-11,"yoy_adj":-63,"qoq_adj":-31,"adj":-20},{"naics":"5418","industry":"Advertising, Public Relations, and Related Services","level":4,"pd":0.0192,"pd_adj":0.0192,"low":0.0054,"med":0.0114,"high":0.0242,"vol":0.0094,"yoy":-66,"qoq":-10,"yoy_adj":-66,"qoq_adj":-10,"adj":0},{"naics":"5419","industry":"Other Professional, Scientific, and Technical Services","level":4,"pd":0.0215,"pd_adj":0.0215,"low":0.0067,"med":0.0135,"high":0.0269,"vol":0.0101,"yoy":-60,"qoq":-44,"yoy_adj":-60,"qoq_adj":-44,"adj":0},{"naics":"56","industry":"Administrative and Support and Waste Management and Remediation Services","level":2,"pd":0.0279,"pd_adj":0.0284,"low":0.0053,"med":0.0133,"high":0.0336,"vol":0.01415,"yoy":-49,"qoq":-8,"yoy_adj":-44,"qoq_adj":-3,"adj":5},{"naics":"561","industry":"Administrative and Support Services","level":3,"pd":0.0284,"pd_adj":0.0289,"low":0.0052,"med":0.0134,"high":0.0341,"vol":0.01445,"yoy":-49,"qoq":-8,"yoy_adj":-44,"qoq_adj":-3,"adj":5},{"naics":"5611","industry":"Office Administrative Services","level":4,"pd":0.0264,"pd_adj":0.0269,"low":0.0061,"med":0.0139,"high":0.0317,"vol":0.0128,"yoy":-46,"qoq":-9,"yoy_adj":-41,"qoq_adj":-4,"adj":5},{"naics":"5612","industry":"Facilities Support Services","level":4,"pd":0.0324,"pd_adj":0.0324,"low":0.0053,"med":0.0145,"high":0.0391,"vol":0.0169,"yoy":41,"qoq":8,"yoy_adj":41,"qoq_adj":8,"adj":0},{"naics":"5613","industry":"Employment Services","level":4,"pd":0.0251,"pd_adj":0.0251,"low":0.0071,"med":0.0147,"high":0.0304,"vol":0.01165,"yoy":-60,"qoq":-10,"yoy_adj":-60,"qoq_adj":-10,"adj":0},{"naics":"5614","industry":"Business Support Services","level":4,"pd":0.0271,"pd_adj":0.0271,"low":0.0064,"med":0.0145,"high":0.0327,"vol":0.01315,"yoy":-50,"qoq":1,"yoy_adj":-50,"qoq_adj":1,"adj":0},{"naics":"5615","industry":"Travel Arrangement and Reservation Services","level":4,"pd":0.0236,"pd_adj":0.0246,"low":0.0074,"med":0.0145,"high":0.0286,"vol":0.0106,"yoy":-49,"qoq":0,"yoy_adj":-39,"qoq_adj":10,"adj":10},{"naics":"5616","industry":"Investigation and Security Services","level":4,"pd":0.0257,"pd_adj":0.0257,"low":0.0065,"med":0.0142,"high":0.0311,"vol":0.0123,"yoy":-64,"qoq":-8,"yoy_adj":-64,"qoq_adj":-8,"adj":0},{"naics":"5617","industry":"Services to Buildings and Dwellings","level":4,"pd":0.0291,"pd_adj":0.0291,"low":0.0048,"med":0.013,"high":0.0349,"vol":0.01505,"yoy":-51,"qoq":-11,"yoy_adj":-51,"qoq_adj":-11,"adj":0},{"naics":"5619","industry":"Other Support Services","level":4,"pd":0.0279,"pd_adj":0.0279,"low":0.0064,"med":0.0148,"high":0.0338,"vol":0.0137,"yoy":-69,"qoq":-7,"yoy_adj":-69,"qoq_adj":-7,"adj":0},{"naics":"562","industry":"Waste Management and Remediation Services","level":3,"pd":0.0381,"pd_adj":0.0396,"low":0.0093,"med":0.0209,"high":0.0469,"vol":0.0188,"yoy":-33,"qoq":-2,"yoy_adj":-18,"qoq_adj":13,"adj":15},{"naics":"5621","industry":"Waste Collection","level":4,"pd":0.041,"pd_adj":0.042,"low":0.01,"med":0.0226,"high":0.0506,"vol":0.0203,"yoy":-35,"qoq":-9,"yoy_adj":-25,"qoq_adj":1,"adj":10},{"naics":"5622","industry":"Waste Treatment and Disposal","level":4,"pd":0.0325,"pd_adj":0.0335,"low":0.008,"med":0.0179,"high":0.0395,"vol":0.01575,"yoy":-45,"qoq":-1,"yoy_adj":-35,"qoq_adj":9,"adj":10},{"naics":"5629","industry":"Remediation and Other Waste Management Services","level":4,"pd":0.0344,"pd_adj":0.0349,"low":0.0083,"med":0.0187,"high":0.042,"vol":0.01685,"yoy":-23,"qoq":5,"yoy_adj":-18,"qoq_adj":10,"adj":5},{"naics":"61","industry":"Educational Services","level":2,"pd":0.0247,"pd_adj":0.0247,"low":0.0085,"med":0.0163,"high":0.0312,"vol":0.01135,"yoy":-86,"qoq":-32,"yoy_adj":-86,"qoq_adj":-32,"adj":0},{"naics":"611","industry":"Educational Services","level":3,"pd":0.0251,"pd_adj":0.0251,"low":0.0084,"med":0.0163,"high":0.0317,"vol":0.01165,"yoy":-86,"qoq":-33,"yoy_adj":-86,"qoq_adj":-33,"adj":0},{"naics":"6111","industry":"Elementary and Secondary Schools","level":4,"pd":0.0237,"pd_adj":0.0237,"low":0.0093,"med":0.0167,"high":0.0299,"vol":0.0103,"yoy":-88,"qoq":-30,"yoy_adj":-88,"qoq_adj":-30,"adj":0},{"naics":"6112","industry":"Junior Colleges","level":4,"pd":0.0296,"pd_adj":0.0296,"low":0.0099,"med":0.0193,"high":0.0374,"vol":0.01375,"yoy":-142,"qoq":-44,"yoy_adj":-142,"qoq_adj":-44,"adj":0},{"naics":"6113","industry":"Colleges, Universities, and Professional Schools","level":4,"pd":0.0298,"pd_adj":0.0298,"low":0.0099,"med":0.0193,"high":0.0376,"vol":0.01385,"yoy":-89,"qoq":-15,"yoy_adj":-89,"qoq_adj":-15,"adj":0},{"naics":"6114","industry":"Business Schools and Computer and Management Training","level":4,"pd":0.0277,"pd_adj":0.0277,"low":0.007,"med":0.0157,"high":0.035,"vol":0.014,"yoy":-68,"qoq":-63,"yoy_adj":-68,"qoq_adj":-63,"adj":0},{"naics":"6115","industry":"Technical and Trade Schools","level":4,"pd":0.0277,"pd_adj":0.0277,"low":0.0076,"med":0.0163,"high":0.0349,"vol":0.01365,"yoy":-77,"qoq":-16,"yoy_adj":-77,"qoq_adj":-16,"adj":0},{"naics":"6116","industry":"Other Schools and Instruction","level":4,"pd":0.0244,"pd_adj":0.0244,"low":0.0076,"med":0.0153,"high":0.0308,"vol":0.0116,"yoy":-84,"qoq":-36,"yoy_adj":-84,"qoq_adj":-36,"adj":0},{"naics":"6117","industry":"Educational Support Services","level":4,"pd":0.0225,"pd_adj":0.0225,"low":0.0088,"med":0.0159,"high":0.0284,"vol":0.0098,"yoy":-95,"qoq":-55,"yoy_adj":-95,"qoq_adj":-55,"adj":0},{"naics":"62","industry":"Health Care and Social Assistance","level":2,"pd":0.0235,"pd_adj":0.0235,"low":0.0071,"med":0.0144,"high":0.0297,"vol":0.0113,"yoy":-62,"qoq":-20,"yoy_adj":-62,"qoq_adj":-20,"adj":0},{"naics":"621","industry":"Ambulatory Health Care Services","level":3,"pd":0.0229,"pd_adj":0.0229,"low":0.0078,"med":0.015,"high":0.0289,"vol":0.01055,"yoy":-55,"qoq":-15,"yoy_adj":-55,"qoq_adj":-15,"adj":0},{"naics":"6211","industry":"Offices of Physicians","level":4,"pd":0.0222,"pd_adj":0.0222,"low":0.0075,"med":0.0145,"high":0.028,"vol":0.01025,"yoy":-51,"qoq":-15,"yoy_adj":-51,"qoq_adj":-15,"adj":0},{"naics":"6212","industry":"Offices of Dentists","level":4,"pd":0.0159,"pd_adj":0.0159,"low":0.0075,"med":0.0123,"high":0.0201,"vol":0.0063,"yoy":-52,"qoq":-19,"yoy_adj":-52,"qoq_adj":-19,"adj":0},{"naics":"6213","industry":"Offices of Other Health Practitioners","level":4,"pd":0.0204,"pd_adj":0.0204,"low":0.0075,"med":0.0139,"high":0.0257,"vol":0.0091,"yoy":-44,"qoq":-18,"yoy_adj":-44,"qoq_adj":-18,"adj":0},{"naics":"6214","industry":"Outpatient Care Centers","level":4,"pd":0.0305,"pd_adj":0.0305,"low":0.0078,"med":0.0174,"high":0.0386,"vol":0.0154,"yoy":-35,"qoq":2,"yoy_adj":-35,"qoq_adj":2,"adj":0},{"naics":"6215","industry":"Medical and Diagnostic Laboratories","level":4,"pd":0.0301,"pd_adj":0.0301,"low":0.0081,"med":0.0176,"high":0.038,"vol":0.01495,"yoy":-86,"qoq":-68,"yoy_adj":-86,"qoq_adj":-68,"adj":0},{"naics":"6216","industry":"Home Health Care Services","level":4,"pd":0.0301,"pd_adj":0.0301,"low":0.0086,"med":0.0181,"high":0.038,"vol":0.0147,"yoy":-73,"qoq":4,"yoy_adj":-73,"qoq_adj":4,"adj":0},{"naics":"6219","industry":"Other Ambulatory Health Care Services","level":4,"pd":0.0296,"pd_adj":0.0296,"low":0.0085,"med":0.0179,"high":0.0374,"vol":0.01445,"yoy":-66,"qoq":-15,"yoy_adj":-66,"qoq_adj":-15,"adj":0},{"naics":"622","industry":"Hospitals","level":3,"pd":0.0353,"pd_adj":0.0353,"low":0.0101,"med":0.0213,"high":0.0447,"vol":0.0173,"yoy":-75,"qoq":-4,"yoy_adj":-75,"qoq_adj":-4,"adj":0},{"naics":"6221","industry":"General Medical and Surgical Hospitals","level":4,"pd":0.0374,"pd_adj":0.0374,"low":0.0103,"med":0.0221,"high":0.0474,"vol":0.01855,"yoy":-75,"qoq":-1,"yoy_adj":-75,"qoq_adj":-1,"adj":0},{"naics":"6222","industry":"Psychiatric and Substance Abuse Hospitals","level":4,"pd":0.0326,"pd_adj":0.0326,"low":0.0089,"med":0.0192,"high":0.0412,"vol":0.01615,"yoy":-1,"qoq":9,"yoy_adj":-1,"qoq_adj":9,"adj":0},{"naics":"6223","industry":"Specialty (except Psychiatric and Substance Abuse) Hospitals","level":4,"pd":0.024,"pd_adj":0.024,"low":0.0096,"med":0.0171,"high":0.0303,"vol":0.01035,"yoy":-53,"qoq":-27,"yoy_adj":-53,"qoq_adj":-27,"adj":0},{"naics":"623","industry":"Nursing and Residential Care Facilities","level":3,"pd":0.0277,"pd_adj":0.0277,"low":0.0065,"med":0.0151,"high":0.035,"vol":0.01425,"yoy":-51,"qoq":8,"yoy_adj":-51,"qoq_adj":8,"adj":0},{"naics":"6231","industry":"Nursing Care Facilities (Skilled Nursing Facilities)","level":4,"pd":0.0324,"pd_adj":0.0324,"low":0.0083,"med":0.0185,"high":0.041,"vol":0.01635,"yoy":-82,"qoq":-11,"yoy_adj":-82,"qoq_adj":-11,"adj":0},{"naics":"6232","industry":"Residential Intellectual and Developmental Disability, Mental Health, and Substance Abuse Facilities","level":4,"pd":0.0246,"pd_adj":0.0246,"low":0.0056,"med":0.0132,"high":0.0311,"vol":0.01275,"yoy":-26,"qoq":27,"yoy_adj":-26,"qoq_adj":27,"adj":0},{"naics":"6233","industry":"Continuing Care Retirement Communities and Assisted Living Facilities for the Elderly","level":4,"pd":0.0317,"pd_adj":0.0317,"low":0.0076,"med":0.0175,"high":0.0402,"vol":0.0163,"yoy":-83,"qoq":-17,"yoy_adj":-83,"qoq_adj":-17,"adj":0},{"naics":"6239","industry":"Other Residential Care Facilities","level":4,"pd":0.028,"pd_adj":0.028,"low":0.0069,"med":0.0157,"high":0.0354,"vol":0.01425,"yoy":-90,"qoq":-14,"yoy_adj":-90,"qoq_adj":-14,"adj":0},{"naics":"624","industry":"Social Assistance","level":3,"pd":0.0264,"pd_adj":0.0264,"low":0.0058,"med":0.0139,"high":0.0334,"vol":0.0138,"yoy":-78,"qoq":-28,"yoy_adj":-78,"qoq_adj":-28,"adj":0},{"naics":"6241","industry":"Individual and Family Services","level":4,"pd":0.02,"pd_adj":0.02,"low":0.0058,"med":0.0121,"high":0.0251,"vol":0.00965,"yoy":-61,"qoq":-15,"yoy_adj":-61,"qoq_adj":-15,"adj":0},{"naics":"6242","industry":"Community Food and Housing, and Emergency and Other Relief Services","level":4,"pd":0.0186,"pd_adj":0.0186,"low":0.0067,"med":0.0125,"high":0.0234,"vol":0.00835,"yoy":-71,"qoq":-41,"yoy_adj":-71,"qoq_adj":-41,"adj":0},{"naics":"6243","industry":"Vocational Rehabilitation Services","level":4,"pd":0.0208,"pd_adj":0.0208,"low":0.0053,"med":0.0118,"high":0.0262,"vol":0.01045,"yoy":-34,"qoq":-28,"yoy_adj":-34,"qoq_adj":-28,"adj":0},{"naics":"6244","industry":"Child Day Care Services","level":4,"pd":0.0284,"pd_adj":0.0284,"low":0.0058,"med":0.0144,"high":0.036,"vol":0.0151,"yoy":-83,"qoq":-30,"yoy_adj":-83,"qoq_adj":-30,"adj":0},{"naics":"71","industry":"Arts, Entertainment, and Recreation","level":2,"pd":0.0271,"pd_adj":0.0276,"low":0.0083,"med":0.0168,"high":0.0342,"vol":0.01295,"yoy":-70,"qoq":-28,"yoy_adj":-65,"qoq_adj":-23,"adj":5},{"naics":"711","industry":"Performing Arts, Spectator Sports, and Related Industries","level":3,"pd":0.0275,"pd_adj":0.028,"low":0.0077,"med":0.0163,"high":0.0346,"vol":0.01345,"yoy":-69,"qoq":-35,"yoy_adj":-64,"qoq_adj":-30,"adj":5},{"naics":"7111","industry":"Performing Arts Companies","level":4,"pd":0.0297,"pd_adj":0.0302,"low":0.0081,"med":0.0175,"high":0.0374,"vol":0.01465,"yoy":-92,"qoq":-8,"yoy_adj":-87,"qoq_adj":-3,"adj":5},{"naics":"7112","industry":"Spectator Sports","level":4,"pd":0.0295,"pd_adj":0.03,"low":0.0083,"med":0.0177,"high":0.0373,"vol":0.0145,"yoy":-71,"qoq":-14,"yoy_adj":-66,"qoq_adj":-9,"adj":5},{"naics":"7113","industry":"Promoters of Performing Arts, Sports, and Similar Events","level":4,"pd":0.0315,"pd_adj":0.032,"low":0.0091,"med":0.0191,"high":0.0398,"vol":0.01535,"yoy":-76,"qoq":-31,"yoy_adj":-71,"qoq_adj":-26,"adj":5},{"naics":"7114","industry":"Agents and Managers for Artists, Athletes, Entertainers, and Other Public Figures","level":4,"pd":0.0274,"pd_adj":0.0279,"low":0.0077,"med":0.0164,"high":0.0345,"vol":0.0134,"yoy":-11,"qoq":5,"yoy_adj":-6,"qoq_adj":10,"adj":5},{"naics":"7115","industry":"Independent Artists, Writers, and Performers","level":4,"pd":0.0254,"pd_adj":0.0259,"low":0.007,"med":0.015,"high":0.0321,"vol":0.01255,"yoy":-65,"qoq":-51,"yoy_adj":-60,"qoq_adj":-46,"adj":5},{"naics":"712","industry":"Museums, Historical Sites, and Similar Institutions","level":3,"pd":0.0184,"pd_adj":0.0194,"low":0.0076,"med":0.0133,"high":0.0232,"vol":0.0078,"yoy":-65,"qoq":-25,"yoy_adj":-55,"qoq_adj":-15,"adj":10},{"naics":"7121","industry":"Museums, Historical Sites, and Similar Institutions","level":4,"pd":0.0184,"pd_adj":0.0194,"low":0.0076,"med":0.0133,"high":0.0232,"vol":0.0078,"yoy":-65,"qoq":-25,"yoy_adj":-55,"qoq_adj":-15,"adj":10},{"naics":"713","industry":"Amusement, Gambling, and Recreation Industries","level":3,"pd":0.0272,"pd_adj":0.0282,"low":0.0102,"med":0.0188,"high":0.0344,"vol":0.0121,"yoy":-85,"qoq":-15,"yoy_adj":-75,"qoq_adj":-5,"adj":10},{"naics":"7131","industry":"Amusement Parks and Arcades","level":4,"pd":0.0262,"pd_adj":0.0272,"low":0.0076,"med":0.0158,"high":0.0331,"vol":0.01275,"yoy":-40,"qoq":-20,"yoy_adj":-30,"qoq_adj":-10,"adj":10},{"naics":"7132","industry":"Gambling Industries","level":4,"pd":0.0229,"pd_adj":0.0229,"low":0.0098,"med":0.0168,"high":0.0289,"vol":0.00955,"yoy":-84,"qoq":-23,"yoy_adj":-84,"qoq_adj":-23,"adj":0},{"naics":"7139","industry":"Other Amusement and Recreation Industries","level":4,"pd":0.0275,"pd_adj":0.0275,"low":0.0103,"med":0.019,"high":0.0349,"vol":0.0123,"yoy":-87,"qoq":-15,"yoy_adj":-87,"qoq_adj":-15,"adj":0},{"naics":"72","industry":"Accommodation and Food Services","level":2,"pd":0.0325,"pd_adj":0.035,"low":0.0097,"med":0.02,"high":0.041,"vol":0.01565,"yoy":-90,"qoq":-10,"yoy_adj":-65,"qoq_adj":15,"adj":25},{"naics":"721","industry":"Accommodation","level":3,"pd":0.0335,"pd_adj":0.036,"low":0.0099,"med":0.0205,"high":0.0422,"vol":0.01615,"yoy":-32,"qoq":30,"yoy_adj":-7,"qoq_adj":55,"adj":25},{"naics":"7211","industry":"Traveler Accommodation","level":4,"pd":0.0356,"pd_adj":0.0381,"low":0.0102,"med":0.0215,"high":0.0448,"vol":0.0173,"yoy":-30,"qoq":31,"yoy_adj":-5,"qoq_adj":56,"adj":25},{"naics":"7212","industry":"RV (Recreational Vehicle) Parks and Recreational Camps","level":4,"pd":0.0232,"pd_adj":0.0247,"low":0.0087,"med":0.0159,"high":0.0291,"vol":0.0102,"yoy":-35,"qoq":4,"yoy_adj":-20,"qoq_adj":19,"adj":15},{"naics":"7213","industry":"Rooming and Boarding Houses","level":4,"pd":0.0278,"pd_adj":0.0278,"low":0.0087,"med":0.0175,"high":0.035,"vol":0.01315,"yoy":-44,"qoq":25,"yoy_adj":-44,"qoq_adj":25,"adj":0},{"naics":"722","industry":"Food Services and Drinking Places","level":3,"pd":0.0323,"pd_adj":0.0338,"low":0.0097,"med":0.0199,"high":0.0407,"vol":0.0155,"yoy":-99,"qoq":-15,"yoy_adj":-84,"qoq_adj":0,"adj":15},{"naics":"7223","industry":"Special Food Services","level":4,"pd":0.0399,"pd_adj":0.0399,"low":0.0103,"med":0.0229,"high":0.0505,"vol":0.0201,"yoy":-138,"qoq":0,"yoy_adj":-138,"qoq_adj":0,"adj":0},{"naics":"7224","industry":"Drinking Places (Alcoholic Beverages)","level":4,"pd":0.0317,"pd_adj":0.0329,"low":0.0097,"med":0.0198,"high":0.0399,"vol":0.0151,"yoy":-112,"qoq":-11,"yoy_adj":-100,"qoq_adj":1,"adj":12},{"naics":"7225","industry":"Restaurants and Other Eating Places","level":4,"pd":0.0306,"pd_adj":0.0331,"low":0.0095,"med":0.0192,"high":0.0386,"vol":0.01455,"yoy":-85,"qoq":-18,"yoy_adj":-60,"qoq_adj":7,"adj":25},{"naics":"81","industry":"Other Services (except Public Administration)","level":2,"pd":0.0287,"pd_adj":0.0287,"low":0.008,"med":0.017,"high":0.0362,"vol":0.0141,"yoy":-64,"qoq":-11,"yoy_adj":-64,"qoq_adj":-11,"adj":0},{"naics":"811","industry":"Repair and Maintenance","level":3,"pd":0.0267,"pd_adj":0.0267,"low":0.0063,"med":0.0146,"high":0.0336,"vol":0.01365,"yoy":-60,"qoq":-10,"yoy_adj":-60,"qoq_adj":-10,"adj":0},{"naics":"8111","industry":"Automotive Repair and Maintenance","level":4,"pd":0.0261,"pd_adj":0.0261,"low":0.0059,"med":0.0139,"high":0.0328,"vol":0.01345,"yoy":-70,"qoq":-20,"yoy_adj":-70,"qoq_adj":-20,"adj":0},{"naics":"8112","industry":"Electronic and Precision Equipment Repair and Maintenance","level":4,"pd":0.0227,"pd_adj":0.0227,"low":0.0066,"med":0.0137,"high":0.0286,"vol":0.011,"yoy":-85,"qoq":-14,"yoy_adj":-85,"qoq_adj":-14,"adj":0},{"naics":"8113","industry":"Commercial and Industrial Machinery and Equipment (except Automotive and Electronic) Repair and Maintenance","level":4,"pd":0.0259,"pd_adj":0.0259,"low":0.0072,"med":0.0154,"high":0.0325,"vol":0.01265,"yoy":-55,"qoq":-4,"yoy_adj":-55,"qoq_adj":-4,"adj":0},{"naics":"8114","industry":"Personal and Household Goods Repair and Maintenance","level":4,"pd":0.0286,"pd_adj":0.0286,"low":0.0069,"med":0.0157,"high":0.0359,"vol":0.0145,"yoy":-39,"qoq":9,"yoy_adj":-39,"qoq_adj":9,"adj":0},{"naics":"812","industry":"Personal and Laundry Services","level":3,"pd":0.0308,"pd_adj":0.0308,"low":0.0087,"med":0.0184,"high":0.0389,"vol":0.0151,"yoy":-72,"qoq":-15,"yoy_adj":-72,"qoq_adj":-15,"adj":0},{"naics":"8121","industry":"Personal Care Services","level":4,"pd":0.0345,"pd_adj":0.0345,"low":0.01,"med":0.0209,"high":0.0435,"vol":0.01675,"yoy":-92,"qoq":-16,"yoy_adj":-92,"qoq_adj":-16,"adj":0},{"naics":"8122","industry":"Death Care Services","level":4,"pd":0.0268,"pd_adj":0.0268,"low":0.0071,"med":0.0155,"high":0.0338,"vol":0.01335,"yoy":-56,"qoq":-4,"yoy_adj":-56,"qoq_adj":-4,"adj":0},{"naics":"8123","industry":"Drycleaning and Laundry Services","level":4,"pd":0.0247,"pd_adj":0.0247,"low":0.0089,"med":0.0166,"high":0.0311,"vol":0.0111,"yoy":-39,"qoq":1,"yoy_adj":-39,"qoq_adj":1,"adj":0},{"naics":"8129","industry":"Other Personal Services","level":4,"pd":0.0279,"pd_adj":0.0279,"low":0.0074,"med":0.0162,"high":0.0352,"vol":0.0139,"yoy":-59,"qoq":-20,"yoy_adj":-59,"qoq_adj":-20,"adj":0},{"naics":"813","industry":"Religious, Grantmaking, Civic, Professional, and Similar Organizations","level":3,"pd":0.0161,"pd_adj":0.0161,"low":0.0054,"med":0.0105,"high":0.0202,"vol":0.0074,"yoy":-55,"qoq":-20,"yoy_adj":-55,"qoq_adj":-20,"adj":0},{"naics":"8131","industry":"Religious Organizations","level":4,"pd":0.0138,"pd_adj":0.0138,"low":0.0051,"med":0.0094,"high":0.0172,"vol":0.00605,"yoy":-57,"qoq":-27,"yoy_adj":-57,"qoq_adj":-27,"adj":0},{"naics":"8132","industry":"Grantmaking and Giving Services","level":4,"pd":0.0204,"pd_adj":0.0204,"low":0.0066,"med":0.013,"high":0.0257,"vol":0.00955,"yoy":-47,"qoq":-2,"yoy_adj":-47,"qoq_adj":-2,"adj":0},{"naics":"8133","industry":"Social Advocacy Organizations","level":4,"pd":0.0188,"pd_adj":0.0188,"low":0.0055,"med":0.0114,"high":0.0236,"vol":0.00905,"yoy":-55,"qoq":-20,"yoy_adj":-55,"qoq_adj":-20,"adj":0},{"naics":"8134","industry":"Civic and Social Organizations","level":4,"pd":0.019,"pd_adj":0.019,"low":0.0054,"med":0.0113,"high":0.0238,"vol":0.0092,"yoy":-52,"qoq":-8,"yoy_adj":-52,"qoq_adj":-8,"adj":0},{"naics":"8139","industry":"Business, Professional, Labor, Political, and Similar Organizations","level":4,"pd":0.0169,"pd_adj":0.0169,"low":0.0055,"med":0.0108,"high":0.0211,"vol":0.0078,"yoy":-57,"qoq":-19,"yoy_adj":-57,"qoq_adj":-19,"adj":0},{"naics":"8141","industry":"Private Households","level":4,"pd":0.0197,"pd_adj":0.0197,"low":0.0083,"med":0.0144,"high":0.0247,"vol":0.0082,"yoy":-57,"qoq":-39,"yoy_adj":-57,"qoq_adj":-39,"adj":0},{"naics":"92","industry":"Public Administration","level":2,"pd":0.0197,"pd_adj":0.0197,"low":0.0094,"med":0.0153,"high":0.0248,"vol":0.0077,"yoy":-67,"qoq":-13,"yoy_adj":-67,"qoq_adj":-13,"adj":0},{"naics":"9211","industry":"Executive, Legislative, and Other General Government Support","level":4,"pd":0.0198,"pd_adj":0.0198,"low":0.0096,"med":0.0154,"high":0.0249,"vol":0.00765,"yoy":-68,"qoq":-13,"yoy_adj":-68,"qoq_adj":-13,"adj":0},{"naics":"9221","industry":"Justice, Public Order, and Safety Activities","level":4,"pd":0.0184,"pd_adj":0.0184,"low":0.0087,"med":0.0141,"high":0.0231,"vol":0.0072,"yoy":-61,"qoq":-18,"yoy_adj":-61,"qoq_adj":-18,"adj":0},{"naics":"9231","industry":"Administration of Human Resource Programs","level":4,"pd":0.0219,"pd_adj":0.0219,"low":0.0101,"med":0.0166,"high":0.0275,"vol":0.0087,"yoy":-51,"qoq":-4,"yoy_adj":-51,"qoq_adj":-4,"adj":0},{"naics":"9241","industry":"Administration of Environmental Quality Programs","level":4,"pd":0.0214,"pd_adj":0.0214,"low":0.0097,"med":0.0162,"high":0.0271,"vol":0.0087,"yoy":-52,"qoq":-16,"yoy_adj":-52,"qoq_adj":-16,"adj":0},{"naics":"9251","industry":"Administration of Housing Programs, Urban Planning, and Community Development","level":4,"pd":0.0218,"pd_adj":0.0218,"low":0.0098,"med":0.0164,"high":0.0275,"vol":0.00885,"yoy":-88,"qoq":-21,"yoy_adj":-88,"qoq_adj":-21,"adj":0},{"naics":"9261","industry":"Administration of Economic Program","level":4,"pd":0.0217,"pd_adj":0.0217,"low":0.0098,"med":0.0163,"high":0.0274,"vol":0.0088,"yoy":-47,"qoq":2,"yoy_adj":-47,"qoq_adj":2,"adj":0},{"naics":"9271","industry":"Space Research and Technology","level":4,"pd":0.0257,"pd_adj":0.0257,"low":0.0101,"med":0.0183,"high":0.0321,"vol":0.011,"yoy":-28,"qoq":-4,"yoy_adj":-28,"qoq_adj":-4,"adj":0},{"naics":"9281","industry":"National Security and International Affairs","level":4,"pd":0.0222,"pd_adj":0.0197,"low":0.01,"med":0.0168,"high":0.028,"vol":0.009,"yoy":-90,"qoq":-14,"yoy_adj":-115,"qoq_adj":-39,"adj":-25}];
+
+// Global range for range bar normalization
+const ALL_HIGH = Math.max(...RAW.map(d => d.high));
+
+// State
+let mode = 'base';       // 'base' or 'adj'
+let expandState = {};    // naics -> bool (open/closed)
+let searchTerm = '';
+let sortCol = null;
+let sortDir = 1;
+
+// Identify which NAICS codes have children
+function buildParentMap() {
+  const hasChildren = new Set();
+  RAW.forEach(d => {
+    if (d.level === 3) {
+      // Parent is 2-digit prefix
+      const p2 = RAW.find(x => x.level === 2 && d.naics.startsWith(x.naics));
+      if (p2) hasChildren.add(p2.naics);
+    }
+    if (d.level === 4) {
+      const p3 = RAW.find(x => x.level === 3 && d.naics.startsWith(x.naics));
+      if (p3) hasChildren.add(p3.naics);
+    }
+  });
+  return hasChildren;
+}
+
+const HAS_CHILDREN = buildParentMap();
+
+// Check if a row should be visible given expand state and search
+function getParentNaics(row) {
+  if (row.level === 3) {
+    // Find 2-digit parent
+    for (const d of RAW) {
+      if ((d.level === 2 || d.level === 5) && row.naics.startsWith(d.naics.replace('-','').replace('-',''))) {
+        // more careful match for level 5 codes like 31-33, 44-45, 48-49
+        return d.naics;
+      }
+    }
+    // fallback: first 2 chars
+    const prefix = row.naics.substring(0, 2);
+    const parent = RAW.find(d => (d.level === 2 || d.level === 5) && d.naics === prefix);
+    return parent ? parent.naics : null;
+  }
+  if (row.level === 4) {
+    const prefix3 = row.naics.substring(0, 3);
+    const parent3 = RAW.find(d => d.level === 3 && d.naics === prefix3);
+    return parent3 ? parent3.naics : null;
+  }
+  return null;
+}
+
+// Build flat visible list based on expand state and search
+function buildVisible() {
+  if (searchTerm) {
+    // In search mode, show all matching rows flat
+    const q = searchTerm.toLowerCase();
+    return RAW.filter(d =>
+      d.industry.toLowerCase().includes(q) || d.naics.toLowerCase().includes(q)
+    );
+  }
+
+  const result = [];
+  RAW.forEach(d => {
+    if (d.level === 2 || d.level === 5) {
+      result.push(d);
+    } else if (d.level === 3) {
+      const parentNaics = getParentNaics(d);
+      if (parentNaics && expandState[parentNaics]) result.push(d);
+    } else if (d.level === 4) {
+      const parent3Naics = getParentNaics(d);
+      if (!parent3Naics) return;
+      const parent3 = RAW.find(r => r.level === 3 && r.naics === parent3Naics);
+      if (!parent3) return;
+      const parent2Naics = getParentNaics(parent3);
+      const parent2Open = parent2Naics && expandState[parent2Naics];
+      const parent3Open = expandState[parent3Naics];
+      if (parent2Open && parent3Open) result.push(d);
+    }
+  });
+  return result;
+}
+
+function fmtPct(v) {
+  return (v * 100).toFixed(2) + '%';
+}
+
+function bpsCell(val) {
+  if (val === 0) return `<span class="cell-bps bps-flat">0 bps</span>`;
+  const cls = val > 0 ? 'bps-up' : 'bps-down';
+  const arrow = val > 0 ? '▲' : '▼';
+  return `<span class="cell-bps ${cls}"><span class="bps-arrow">${arrow}</span>${Math.abs(val)}</span>`;
+}
+
+function rangeBar(d) {
+  const globalMax = ALL_HIGH;
+  const leftPct = (d.low / globalMax) * 100;
+  const widthPct = ((d.high - d.low) / globalMax) * 100;
+  const medPct = (d.med / globalMax) * 100;
+  return `
+    <div class="cell-range">
+      <div class="range-bar-wrap">
+        <div class="range-bar-fill" style="left:${leftPct.toFixed(1)}%;width:${widthPct.toFixed(1)}%"></div>
+        <div class="range-med-marker" style="left:${medPct.toFixed(1)}%"></div>
+      </div>
+      <div class="range-labels">
+        <span>${fmtPct(d.low)}</span>
+        <span class="range-med-val">${fmtPct(d.med)}</span>
+        <span>${fmtPct(d.high)}</span>
+      </div>
+    </div>`;
+}
+
+function highlight(text, term) {
+  if (!term) return text;
+  const idx = text.toLowerCase().indexOf(term.toLowerCase());
+  if (idx === -1) return text;
+  return text.substring(0, idx) + '<mark class="highlight">' + text.substring(idx, idx + term.length) + '</mark>' + text.substring(idx + term.length);
+}
+
+function renderRows() {
+  const container = document.getElementById('rows');
+  const empty = document.getElementById('emptyState');
+  let visible = buildVisible();
+
+  // Sort if needed
+  if (sortCol && searchTerm) {
+    visible.sort((a, b) => {
+      let av, bv;
+      if (sortCol === 'naics') { av = a.naics; bv = b.naics; return sortDir * av.localeCompare(bv); }
+      if (sortCol === 'industry') { av = a.industry; bv = b.industry; return sortDir * av.localeCompare(bv); }
+      if (sortCol === 'pd') { av = mode === 'adj' ? a.pd_adj : a.pd; bv = mode === 'adj' ? b.pd_adj : b.pd; }
+      if (sortCol === 'med') { av = a.med; bv = b.med; }
+      if (sortCol === 'yoy') { av = mode === 'adj' ? a.yoy_adj : a.yoy; bv = mode === 'adj' ? b.yoy_adj : b.yoy; }
+      if (sortCol === 'qoq') { av = mode === 'adj' ? a.qoq_adj : a.qoq; bv = mode === 'adj' ? b.qoq_adj : b.qoq; }
+      return sortDir * (av - bv);
+    });
+  }
+
+  if (visible.length === 0) {
+    container.innerHTML = '';
+    empty.style.display = 'block';
+    updateStats([]);
+    return;
+  }
+  empty.style.display = 'none';
+
+  const isLeaf = d => !HAS_CHILDREN.has(d.naics);
+  const isOpen = d => !!expandState[d.naics];
+
+  const html = visible.map(d => {
+    const pdVal = mode === 'adj' ? d.pd_adj : d.pd;
+    const yoyVal = mode === 'adj' ? d.yoy_adj : d.yoy;
+    const qoqVal = mode === 'adj' ? d.qoq_adj : d.qoq;
+    const leaf = isLeaf(d) || searchTerm;
+    const open = isOpen(d);
+    const adjDiff = d.pd_adj !== d.pd;
+
+    const expandClass = leaf ? 'leaf' : (open ? 'open' : '');
+    const industryText = highlight(d.industry, searchTerm);
+    const naicsText = highlight(d.naics, searchTerm);
+    const adjBadge = (mode === 'adj' && adjDiff) ? `<span class="adj-badge">ADJ</span>` : '';
+
+    return `<div class="row level-${d.level}" data-naics="${d.naics}">
+      <div class="cell-naics">
+        <button class="expand-btn ${expandClass}" aria-label="Toggle">
+          <svg viewBox="0 0 10 10" fill="currentColor"><polygon points="2,2 8,5 2,8"/></svg>
+        </button>
+        <span class="naics-badge">${naicsText}</span>
+      </div>
+      <div class="cell-name">${industryText}</div>
+      <div class="cell-pd">${fmtPct(pdVal)}${adjBadge}</div>
+      ${rangeBar(d)}
+      ${bpsCell(yoyVal)}
+      ${bpsCell(qoqVal)}
+    </div>`;
+  }).join('');
+
+  container.innerHTML = html;
+
+  // Attach click events
+  container.querySelectorAll('.row').forEach(rowEl => {
+    const naics = rowEl.dataset.naics;
+    rowEl.addEventListener('click', () => {
+      if (!searchTerm && HAS_CHILDREN.has(naics)) {
+        expandState[naics] = !expandState[naics];
+        renderRows();
+      }
+    });
+  });
+
+  updateStats(visible);
+}
+
+function updateStats(visible) {
+  const lvl4 = visible.filter(d => d.level === 4 || (searchTerm && d.level >= 3));
+  document.getElementById('stat-count').textContent = visible.length;
+  if (lvl4.length) {
+    const avg = lvl4.reduce((s, d) => s + (mode === 'adj' ? d.pd_adj : d.pd), 0) / lvl4.length;
+    const maxItem = lvl4.reduce((m, d) => {
+      const v = mode === 'adj' ? d.pd_adj : d.pd;
+      return v > (mode === 'adj' ? m.pd_adj : m.pd) ? d : m;
+    });
+    const maxPd = mode === 'adj' ? maxItem.pd_adj : maxItem.pd;
+    const avgYoy = lvl4.reduce((s, d) => s + (mode === 'adj' ? d.yoy_adj : d.yoy), 0) / lvl4.length;
+    document.getElementById('stat-avg').textContent = fmtPct(avg);
+    document.getElementById('stat-max').textContent = fmtPct(maxPd) + ' (' + maxItem.naics + ')';
+    const sign = avgYoy > 0 ? '+' : '';
+    document.getElementById('stat-yoy').textContent = sign + avgYoy.toFixed(0) + ' bps';
+  } else {
+    document.getElementById('stat-avg').textContent = '—';
+    document.getElementById('stat-max').textContent = '—';
+    document.getElementById('stat-yoy').textContent = '—';
+  }
+}
+
+// Init expand state: sectors open by default
+RAW.forEach(d => { if (d.level === 2 || d.level === 5) expandState[d.naics] = false; });
+
+// Controls
+document.querySelectorAll('.toggle-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    mode = btn.dataset.mode;
+    renderRows();
+  });
+});
+
+document.getElementById('expandAll').addEventListener('click', () => {
+  RAW.forEach(d => { if (d.level === 2 || d.level === 5 || d.level === 3) expandState[d.naics] = true; });
+  renderRows();
+});
+
+document.getElementById('collapseAll').addEventListener('click', () => {
+  Object.keys(expandState).forEach(k => expandState[k] = false);
+  renderRows();
+});
+
+let searchTimer;
+document.getElementById('search').addEventListener('input', e => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    searchTerm = e.target.value.trim();
+    renderRows();
+  }, 180);
+});
+
+document.querySelectorAll('.col-header-cell[data-sort]').forEach(cell => {
+  cell.addEventListener('click', () => {
+    const col = cell.dataset.sort;
+    if (sortCol === col) sortDir *= -1;
+    else { sortCol = col; sortDir = 1; }
+    document.querySelectorAll('.col-header-cell').forEach(c => c.classList.remove('active'));
+    cell.classList.add('active');
+    // Sort only applies in search mode; in tree mode just re-render
+    if (!searchTerm) {
+      // Enable flat sort in normal mode too by temporarily treating as search
+    }
+    renderRows();
+  });
+});
+
+// Sticky header offset — recalc on load and resize
+function updateStickyTop() {
+  const headerH = document.querySelector('.app-header').offsetHeight;
+  document.querySelector('.col-header').style.top = headerH + 'px';
+}
+window.addEventListener('resize', updateStickyTop);
+// Also recalc after fonts/layout settle
+setTimeout(updateStickyTop, 100);
+
+// Initial render
+renderRows();
+</script>
+</body>
+</html>
