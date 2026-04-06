@@ -232,7 +232,7 @@
   /* Column header */
   .col-header {
     display: grid;
-    grid-template-columns: 90px 1fr 72px 220px 70px 80px 80px;
+    grid-template-columns: 90px 1fr 72px 80px 80px 220px 70px;
     padding: 7px 16px;
     background: #eef1f8;
     border-bottom: 2px solid var(--gold);
@@ -265,7 +265,7 @@
 
   .row {
     display: grid;
-    grid-template-columns: 90px 1fr 72px 220px 70px 80px 80px;
+    grid-template-columns: 90px 1fr 72px 80px 80px 220px 70px;
     gap: 8px;
     padding: 0 16px;
     border-bottom: 1px solid var(--border);
@@ -540,9 +540,9 @@
   /* Medium screens: hide QoQ */
   @media (max-width: 860px) {
     .col-header, .row {
-      grid-template-columns: 90px 1fr 72px 200px 70px 80px;
+      grid-template-columns: 90px 1fr 72px 80px 80px 200px 70px;
     }
-    .col-header-cell:nth-child(7),
+    .col-header-cell:nth-child(5),
     .row > .cell-bps:last-child { display: none; }
   }
 
@@ -602,19 +602,21 @@
     .stats-bar::-webkit-scrollbar { display: none; }
     .stat-chip { white-space: nowrap; font-size: 10.5px; }
 
-    /* Table: NAICS · Industry · PD · Vol · YoY only */
+    /* Table: NAICS · Industry · PD · YoY only */
     .col-header, .row {
-      grid-template-columns: 62px 1fr 64px 58px 62px;
+      grid-template-columns: 62px 1fr 64px 62px;
       padding: 0 12px;
       gap: 8px;
     }
     .col-header { padding: 7px 12px; }
 
     /* Hide Range and QoQ */
-    .col-header-cell:nth-child(4),
+    .col-header-cell:nth-child(5),
+    .col-header-cell:nth-child(6),
     .col-header-cell:nth-child(7),
     .row > .cell-range,
-    .row > .cell-bps:last-child { display: none; }
+    .row > .cell-bps:last-child,
+    .row > .cell-vol { display: none; }
 
     /* Typography */
     .naics-badge { font-size: 9px; padding: 2px 5px; }
@@ -686,10 +688,10 @@
     <div class="col-header-cell" data-sort="naics">NAICS <span class="sort-icon">↕</span></div>
     <div class="col-header-cell" data-sort="industry">Industry <span class="sort-icon">↕</span></div>
     <div class="col-header-cell" data-sort="pd">PD <span class="sort-icon">↕</span></div>
-    <div class="col-header-cell" data-sort="med">Historical Range (L / Med / H) <span class="sort-icon">↕</span></div>
-    <div class="col-header-cell right" data-sort="vol">Vol <span class="sort-icon">↕</span></div>
     <div class="col-header-cell right" data-sort="yoy">YoY % <span class="sort-icon">↕</span></div>
     <div class="col-header-cell right" data-sort="qoq">QoQ % <span class="sort-icon">↕</span></div>
+    <div class="col-header-cell" data-sort="med">Historical Range (L / Med / H) <span class="sort-icon">↕</span></div>
+    <div class="col-header-cell right" data-sort="vol">Vol <span class="sort-icon">↕</span></div>
   </div>
   <div class="rows-container" id="rows"></div>
   <div class="empty-state" id="emptyState" style="display:none">
@@ -722,7 +724,7 @@
 </div>
 
 <div class="app-footer">
-  Source: Loan Command PODs 1Q 2026 · YoY/QoQ shown as % change · Positive = increasing default risk · v2.2
+  Source: Loan Command PODs 1Q 2026 · YoY/QoQ shown as % change · Positive = increasing default risk · v2.3
 </div>
 
 <script>
@@ -927,10 +929,10 @@ function renderRows() {
       </div>
       <div class="cell-name">${industryText}</div>
       <div class="cell-pd ${pdHeat(pdVal)}">${fmtPct(pdVal)}</div>
-      ${rangeBar(d)}
-      <span class="cell-vol ${volHeat(d.vol)}">${fmtPct(d.vol)}</span>
       ${bpsCell(yoyVal)}
       ${bpsCell(qoqVal)}
+      ${rangeBar(d)}
+      <span class="cell-vol ${volHeat(d.vol)}">${fmtPct(d.vol)}</span>
     </div>`;
   }).join('');
 
