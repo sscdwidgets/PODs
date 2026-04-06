@@ -220,7 +220,7 @@
   /* Column header */
   .col-header {
     display: grid;
-    grid-template-columns: 90px 1fr 88px 150px 82px 82px;
+    grid-template-columns: 90px 1fr 84px 200px 80px 80px;
     padding: 7px 16px;
     background: #eef1f8;
     border-bottom: 2px solid var(--gold);
@@ -253,7 +253,7 @@
 
   .row {
     display: grid;
-    grid-template-columns: 90px 1fr 88px 150px 82px 82px;
+    grid-template-columns: 90px 1fr 84px 200px 80px 80px;
     gap: 8px;
     padding: 0 16px;
     border-bottom: 1px solid var(--border);
@@ -363,6 +363,7 @@
     display: flex;
     flex-direction: column;
     gap: 3px;
+    padding-left: 8px;
   }
   .range-bar-wrap {
     position: relative;
@@ -443,7 +444,7 @@
   /* Medium screens: hide QoQ */
   @media (max-width: 860px) {
     .col-header, .row {
-      grid-template-columns: 90px 1fr 88px 150px 82px;
+      grid-template-columns: 90px 1fr 84px 200px 80px;
     }
     .col-header-cell:nth-child(6),
     .row > .cell-bps:last-child { display: none; }
@@ -535,7 +536,7 @@
       <div class="header-logo"></div>
       <div>
         <h1>C&amp;I Probability of Default</h1>
-        <p>LOAN COMMAND · 1Q 2026 · NAICS INDUSTRY BROWSER</p>
+        <p>LOAN COMMAND · 1Q 2026 · NAICS INDUSTRY BROWSER · v1.1</p>
       </div>
     </div>
     <div class="header-controls">
