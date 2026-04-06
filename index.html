@@ -232,7 +232,7 @@
   /* Column header */
   .col-header {
     display: grid;
-    grid-template-columns: 90px 1fr 58px 72px 72px 220px 70px;
+    grid-template-columns: 90px 1fr 76px 88px 88px 200px 76px;
     padding: 7px 16px;
     background: #eef1f8;
     border-bottom: 2px solid var(--gold);
@@ -265,7 +265,7 @@
 
   .row {
     display: grid;
-    grid-template-columns: 90px 1fr 58px 72px 72px 220px 70px;
+    grid-template-columns: 90px 1fr 76px 88px 88px 200px 76px;
     gap: 8px;
     padding: 0 16px;
     border-bottom: 1px solid var(--border);
@@ -543,7 +543,7 @@
   /* Medium screens: hide QoQ */
   @media (max-width: 860px) {
     .col-header, .row {
-      grid-template-columns: 90px 1fr 58px 72px 72px 200px 70px;
+      grid-template-columns: 90px 1fr 76px 88px 88px 180px 76px;
     }
     .col-header-cell:nth-child(5),
     .row > .cell-bps:last-child { display: none; }
@@ -690,7 +690,7 @@
   <div class="col-header">
     <div class="col-header-cell" data-sort="naics">NAICS <span class="sort-icon">↕</span></div>
     <div class="col-header-cell" data-sort="industry">Industry <span class="sort-icon">↕</span></div>
-    <div class="col-header-cell" data-sort="pd">PD <span class="sort-icon">↕</span></div>
+    <div class="col-header-cell right" data-sort="pd">PD <span class="sort-icon">↕</span></div>
     <div class="col-header-cell right" data-sort="yoy">YoY % <span class="sort-icon">↕</span></div>
     <div class="col-header-cell right" data-sort="qoq">QoQ % <span class="sort-icon">↕</span></div>
     <div class="col-header-cell" data-sort="med">Historical Range (L / Med / H) <span class="sort-icon">↕</span></div>
